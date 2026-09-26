@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RH e Eficiência Operacional – HE Belém</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <b>RH e Eficiência Operacional</b>
+      <span>Horas extras · Filial BEL</span>
+    </div>
+    <nav class="nav" id="nav" aria-label="Seções">
+      <button data-aba="exec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Visão executiva</button>
+      <button data-aba="he"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horas extras</button>
+      <button data-aba="custos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg>Custos</button>
+      <button data-aba="jornadas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M6 8v8M12 6v12M18 9v6"/></svg>Jornadas e turnos</button>
+      <button data-aba="rankings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21V11M16 21V5M12 21v-6M4 21h16"/></svg>Rankings</button>
+      <button data-aba="problemas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg>Problemas e insights</button>
+      <button data-aba="simulacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Simulação 13h–22h</button>
+      <button data-aba="qualidade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l4 4 10-10"/></svg>Qualidade dos dados</button>
+    </nav>
+    <div class="side-foot" id="side-foot"></div>
+  </aside>
+
+  <div class="main">
+    <header class="top" id="top">
+      <div class="titulo">
+        <h1 id="h-titulo">Visão executiva</h1>
+        <p id="h-sub"></p>
+      </div>
+      <div class="filtro"><label for="f-ano">Ano</label><select id="f-ano"></select></div>
+      <div class="filtro"><label for="f-mes">Mês</label><select id="f-mes"></select></div>
+      <div class="filtro"><label for="f-area">Área</label><select id="f-area"></select></div>
+      <div class="filtro"><label for="f-turno">Turno</label><select id="f-turno"></select></div>
+      <div class="filtro"><label for="f-sit">Situação</label><select id="f-sit"></select></div>
+      <div class="filtro"><label for="f-func">Função</label><select id="f-func"></select></div>
+      <div class="filtro"><label for="f-busca">Buscar colaborador</label><input id="f-busca" type="search" placeholder="Nome"></div>
+      <button class="btn" id="b-limpar" type="button">Limpar filtros</button>
+      <button class="btn prim" id="b-imprimir" type="button">Imprimir / PDF</button>
+    </header>
+    <div class="chips" id="chips"></div>
+    <main id="view" tabindex="-1"></main>
+    <footer class="app-footer">
+      Fonte dos dados: Prévia da Folha | Desenvolvido por Manoel Armenteiro Diger Neto
+    </footer>
+  </div>
+</div>
+
+<noscript>Ative o JavaScript para visualizar o painel.</noscript>
+<script src="data/processado/dados.js"></script>
+<script src="assets/vendor/chart.umd.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/simulacao.js"></script>
+<script src="assets/js/views.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

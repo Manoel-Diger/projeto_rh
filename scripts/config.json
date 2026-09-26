@@ -1,0 +1,66 @@
+{
+  "_leia_me": "Configuração central. Altere aqui as regras de negócio sem mexer no código. O dashboard também lê estes parâmetros como valores iniciais da simulação.",
+
+  "filial": {
+    "nome": "Filial BEL – Belém/PA",
+    "empresa": "Vitlog"
+  },
+
+  "eventos_folha": {
+    "_comentario": "Códigos dos eventos da folha (coluna 'Cod.'). Se o sistema de folha mudar um código, ajuste aqui.",
+    "he_valor": [34, 36, 39],
+    "he_50": [34, 39],
+    "he_100": [36],
+    "he_banco_horas_50": [39],
+    "dsr_he": [65],
+    "adicional_noturno": [60],
+    "hora_reduzida_noturna": [193],
+    "dsr_noturno": [309],
+    "horas_normais": [1],
+    "horas_ferias": [12],
+    "faltas": [18],
+    "faltas_dsr": [22],
+    "atrasos": [30],
+    "atestado": [56],
+    "multa_transito": [534],
+    "rescisao": [100, 102, 109, 126, 167, 170, 172, 174, 182, 184, 222, 224, 231, 232, 236, 238, 243],
+    "decimo_terceiro_adiantado": [200]
+  },
+
+  "regras": {
+    "divisor_hora_mensal": 220,
+    "limite_he_mes_horas": 44,
+    "intervalo_minutos": 60,
+    "encargos_sobre_he_pct": 8.0,
+    "_encargos_comentario": "Percentual aplicado sobre o custo de HE para estimar encargos (padrão: FGTS 8%). Ajuste se a controladoria usar outro fator."
+  },
+
+  "areas_por_palavra_chave": {
+    "_comentario": "Ordem importa: a primeira palavra encontrada no nome da função define a área.",
+    "Aprendizes": ["APRENDIZ"],
+    "Liderança": ["COORDENADOR", "SUPERVISOR"],
+    "Administrativo": ["ADMINISTRATIV", "ANALISTA"],
+    "Distribuição": ["ENTREGADOR", "MOTORISTA", "MOTOR."],
+    "Armazém": ["CONFERENTE", "ARRUMADOR", "EXPEDI", "EMPILHADEIRA", "SERVICOS GERAIS", "SERVIÇOS GERAIS"]
+  },
+
+  "simulacao_turno": {
+    "_comentario": "Cenário atual: 08h–17h + 12h–21h. Cenário proposto: 08h–17h + 13h–22h. Sem os horários reais de batida (cartão-ponto) o efeito sobre as HE é uma hipótese ajustável no dashboard.",
+    "horarios_que_migram": ["12h–21h"],
+    "horario_proposto": "13h–22h",
+    "pct_he_absorvida": 30,
+    "pct_he_restante_apos_22h": 15,
+    "adicional_noturno_pct": 20,
+    "dias_uteis_mes": 22,
+    "janela_absorvivel_horas_dia": 1,
+    "custo_extra_dia_por_colaborador": 0.0,
+    "_custo_extra_comentario": "Use para incluir jantar, transporte noturno etc. (R$ por colaborador por dia trabalhado no novo turno)."
+  },
+
+  "arquivos": {
+    "pasta_folhas": "data/entrada/folha",
+    "pasta_base_mestra": "data/entrada/base_mestra",
+    "pasta_saida": "data/processado",
+    "abas_base_mestra_aceitas": ["Base Mestra", "Base_Mestra", "BaseMestra"]
+  }
+}
