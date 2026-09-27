@@ -5,6 +5,7 @@
   --text:#e7edf3; --muted:#91a0af; --faint:#647486;
   --atual:#4a6f8f; --proposto:#0f8b8d; --he:#c9822b; --he-soft:#f6e6d0;
   --alerta:#b3402f; --alerta-soft:#f6dcd7; --ok:#2e7d5b; --ok-soft:#d9eee4;
+  --colab:#8b7bff;
   --medio:#a9781a; --medio-soft:#f5ead0;
   --radius:10px; --radius-sm:6px;
   --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
@@ -98,6 +99,11 @@ tr:hover td{background:#16212c}
 .pill.warn{background:var(--alerta-soft);color:var(--alerta)}
 .pill.ok{background:var(--ok-soft);color:var(--ok)}
 .pill.he{background:var(--he-soft);color:#8a561a}
+.kpi.dest{background:linear-gradient(160deg,#241a0d,var(--ink));border:1px solid var(--he);box-shadow:0 0 0 1px rgba(201,130,43,.28),0 8px 20px -8px rgba(201,130,43,.45)}
+.kpi.dest .rot{color:#f0c98a;display:flex;align-items:center;gap:6px}
+.kpi.dest .pill.he{background:var(--he);color:#1b1206;font-weight:700}
+.tabela-mensal th{cursor:default}
+.tabela-mensal tr.linha-dest td{background:#16212c;font-weight:600}
 .barra{display:inline-block;height:6px;border-radius:3px;background:var(--he);vertical-align:middle;margin-left:8px;opacity:.85}
 .tools{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px;flex-wrap:wrap}
 .tools small{color:var(--muted)}

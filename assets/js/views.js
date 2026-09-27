@@ -18,6 +18,43 @@
       <b class="num" style="font-size:13px">${fmt(i.v)}</b></div>`).join("")}</div>`;
   };
 
+  // Nomes curtos de mês para colunas da tabela comparativa (independe de locale).
+  const MES_CURTO = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+  // Tabela "COMPARATIVO MENSAL — HE E DSR": indicadores nas linhas, meses do Ano selecionado nas colunas,
+  // TOTAL do período e VAR. (último mês disponível vs. anterior). Usa U.comparativoMensal(), que já
+  // respeita o filtro de Ano (nunca mistura anos) e os demais filtros (área/turno/situação/função/busca).
+  const tabelaComparativoMensalHE = () => {
+    const mensal = U.comparativoMensal();
+    if (!mensal.length) return "";
+    const uniHist = U.kpisHistoricos(U.dadosHistoricosFiltrados()).nComHE; // colaboradores únicos no Ano filtrado
+    const linhas = [
+      { t: "HE 50%", f: (x) => x.he50_v, tipo: "money" },
+      { t: "HE 100%", f: (x) => x.he100_v, tipo: "money" },
+      { t: "HE 50% c/ BH", f: (x) => x.heBH_v, tipo: "money" },
+      { t: "HE Total", f: (x) => x.heV, tipo: "money" },
+      { t: "DSR sobre HE", f: (x) => x.dsr, tipo: "money" },
+      { t: "HE + DSR", f: (x) => x.he, tipo: "money", dest: true },
+      { t: "Horas de HE", f: (x) => x.heH, tipo: "h" },
+      { t: "Colaboradores com HE", f: (x) => x.nComHE, tipo: "n", totalFixo: uniHist },
+      { t: "Acima de 44h", f: (x) => x.acima, tipo: "n" },
+    ];
+    const fmt = (v, tipo) => tipo === "money" ? U.brl(v) : tipo === "h" ? U.n1(v) + " h" : U.n0(v);
+    const head = `<th>Indicador</th>` + mensal.map((x) => `<th class="n">${MES_CURTO[+x.mes.split("-")[1] - 1]}</th>`).join("") + `<th class="n">TOTAL</th><th class="n">VAR.</th>`;
+    const body = linhas.map((linha) => {
+      const valores = mensal.map(linha.f);
+      const total = linha.totalFixo != null ? linha.totalFixo : valores.reduce((a, b) => a + b, 0);
+      const ult = valores[valores.length - 1], penult = valores.length > 1 ? valores[valores.length - 2] : null;
+      const varHtml = penult != null ? (U.delta(ult, penult) || "—") : "";
+      return `<tr${linha.dest ? ' class="linha-dest"' : ""}><td>${U.esc(linha.t)}</td>` +
+        valores.map((v) => `<td class="n">${fmt(v, linha.tipo)}</td>`).join("") +
+        `<td class="n"><b>${fmt(total, linha.tipo)}</b></td><td class="n">${varHtml}</td></tr>`;
+    }).join("");
+    return `<div class="card"><h3>Comparativo mensal — HE e DSR</h3>
+      <p class="sub">Soma por mês, conforme os filtros selecionados (nunca mistura anos). HE Total = HE 50% + HE 100% + HE 50% c/ BH, sem DSR. VAR. compara o último mês disponível com o anterior.</p>
+      <div class="tabela-wrap tabela-mensal"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></div>`;
+  };
+
   // ===================== VISÃO EXECUTIVA =====================
   V.exec = (view) => {
     const todos = U.state.mes === "TODOS";
@@ -35,17 +72,16 @@
     const mensal = U.comparativoMensal();
     const labels = mensal.map((x) => U.mesLabel(x.mes));
     const mediaPeriodo = L.filter((x) => x.he_h > 0).length ? U.soma(L, "he_h") / L.filter((x) => x.he_h > 0).length : 0;
-    const acimaPeriodo = L.filter((x) => x.acima_limite).length;
 
     view.innerHTML = `
-      ${todos ? `<div class="card historico-head"><div><h3>Visão consolidada do histórico</h3><p class="sub">Totais acumulados de todos os meses disponíveis. Os filtros de Área, Turno, Situação, Função e Busca são aplicados ao período inteiro.</p></div><span class="pill">${mensal.length} mês(es)</span></div>` : ""}
+      ${todos ? `<div class="card historico-head"><div><h3>Visão consolidada do histórico</h3><p class="sub">Totais acumulados dos meses do ano selecionado. Os filtros de Área, Turno, Situação, Função e Busca são aplicados ao período inteiro.</p></div><span class="pill">${mensal.length} mês(es)</span></div>` : ""}
       <div class="grid g-kpi">
-        ${kpi(todos ? "Custo de HE + DSR no período" : "Custo de horas extras (com DSR)", U.brl0(k.he) + d(k.he, ka && ka.he), `${todos ? "total acumulado" : U.pct(k.pctRem) + " da remuneração bruta"}`, "dest")}
-        ${kpi(todos ? "Horas extras no período" : "Horas extras no mês", U.n0(k.heH) + " h" + d(k.heH, ka && ka.heH), todos ? `Média ${U.n1(mediaPeriodo)} h por ocorrência com HE` : `Custo médio ${U.brl(k.custoHora)} por hora (c/ DSR)`)}
-        ${kpi(todos ? "Colaboradores com HE no período" : "Colaboradores com HE", `${k.nComHE} <span style="font-size:15px;color:var(--muted)">${todos ? "únicos" : `de ${k.n}`}</span>`, todos ? "Colaboradores únicos com HE em pelo menos um mês" : `${U.pct(k.n ? (k.nComHE / k.n) * 100 : 0)} do quadro filtrado`)}
-        ${kpi(todos ? "Média de HE por ocorrência" : "Média por quem fez HE", U.n1(todos ? mediaPeriodo : k.mediaHE) + " h", todos ? "Média mensal por colaborador com HE" : `Referência de limite: ${G.DADOS.config.regras.limite_he_mes_horas} h/mês`)}
-        ${kpi(todos ? "Ocorrências acima de 44h" : "Acima do limite mensal", todos ? acimaPeriodo : k.acima, todos ? "Soma das ocorrências mensais acima da referência" : (k.acima ? "colaboradores para revisar" : "nenhum colaborador"))}
-        ${kpi("Encargos estimados sobre HE", U.brl0(k.encargos), `${G.DADOS.config.regras.encargos_sobre_he_pct}% (FGTS) — ajustável em config.json`)}
+        ${kpi("HE 50%", U.brl(k.he50_v) + d(k.he50_v, ka && ka.he50_v), `${U.n1(k.he50_h)} h${d(k.he50_h, ka && ka.he50_h)}`)}
+        ${kpi("HE 100%", U.brl(k.he100_v) + d(k.he100_v, ka && ka.he100_v), `${U.n1(k.he100_h)} h${d(k.he100_h, ka && ka.he100_h)}`)}
+        ${kpi("HE 50% c/ BH", U.brl(k.heBH_v) + d(k.heBH_v, ka && ka.heBH_v), `${U.n1(k.heBH_h)} h${d(k.heBH_h, ka && ka.heBH_h)}`)}
+        ${kpi("DSR sobre HE", U.brl(k.dsr) + d(k.dsr, ka && ka.dsr), `${U.n1(k.heV ? (k.dsr / k.heV) * 100 : 0)}% de reflexo sobre a HE`)}
+        ${kpi(`HE + DSR <span class="pill he">TOTAL</span>`, U.brl(k.he) + d(k.he, ka && ka.he), `${U.n0(k.heH)} h de HE${todos ? " no período" : " no mês"} (sem encargos) · encargos est. ${U.brl(k.encargos)}`, "dest")}
+        ${kpi("Colaboradores com HE", `${k.nComHE} <span style="font-size:15px;color:var(--muted)">${todos ? "únicos" : `de ${k.n}`}</span>` + (!todos ? d(k.nComHE, ka && ka.nComHE) : ""), todos ? `Únicos no período · média ${U.n1(mediaPeriodo)} h por colaborador com HE` : `${U.pct(k.n ? (k.nComHE / k.n) * 100 : 0)} do quadro · média ${U.n1(k.mediaHE)} h`)}
       </div>
 
       ${todos ? `<div class="grid g-2">
@@ -71,13 +107,15 @@
         <div class="card"><h3>Distribuição por faixa de HE</h3><p class="sub">Quantos colaboradores em cada faixa de horas extras no mês.</p><div class="chart short"><canvas id="c-faixa"></canvas></div></div>
       </div>`}
 
+      ${tabelaComparativoMensalHE()}
+
       ${ins.length ? `<div><div class="secao" style="margin-bottom:10px">2>O que merece atenção</h2><p><a href="#" data-aba="problemas" style="color:var(--ink-3)">Ver todos os insights</a></p></div>
         <div class="ins">${ins.map(insight).join("")}</div></div>` : ""}`;
 
     if (todos) {
       C.barras("c-mensal-custo", labels, mensal.map((x) => Math.round(x.he)), { fmt: (v) => U.brlK(v), tooltipFmt: (v) => U.brl0(v), cor: c.he });
       C.barras("c-mensal-horas", labels, mensal.map((x) => +x.heH.toFixed(1)), { fmt: (v) => v + " h", cor: c.atual });
-      C.barras("c-mensal-colab", labels, mensal.map((x) => x.nComHE), { fmt: (v) => v + " col.", cor: c.ink3 });
+      C.barras("c-mensal-colab", labels, mensal.map((x) => x.nComHE), { fmt: (v) => v + " col.", cor: c.colab });
       C.barras("c-mensal-media", labels, mensal.map((x) => +x.mediaHE.toFixed(1)), { fmt: (v) => v + " h", cor: c.medio });
       C.barras("c-mensal-acima", labels, mensal.map((x) => x.acima), { fmt: (v) => v + " col.", cor: c.alerta });
       return;
@@ -163,10 +201,10 @@
     const noturno = U.soma(L, "noturno_v");
     view.innerHTML = `
       <div class="grid g-kpi">
-        ${kpi("HE (sem DSR)", U.brl0(k.heV), `${U.n0(k.heH)} horas`)}
-        ${kpi("DSR sobre HE", U.brl0(k.dsr), `${U.n1(k.heV ? (k.dsr / k.heV) * 100 : 0)}% de reflexo`)}
-        ${kpi("Encargos estimados", U.brl0(k.encargos), `${G.DADOS.config.regras.encargos_sobre_he_pct}% sobre HE + DSR`)}
-        ${kpi("Custo total de HE", U.brl0(k.he + k.encargos), "HE + DSR + encargos", "dest")}
+        ${kpi("HE Total (sem DSR)", U.brl(k.heV), `${U.n0(k.heH)} horas · igual à linha "HE Total" da Visão executiva`)}
+        ${kpi("DSR sobre HE", U.brl(k.dsr), `${U.n1(k.heV ? (k.dsr / k.heV) * 100 : 0)}% de reflexo`)}
+        ${kpi("Encargos estimados", U.brl(k.encargos), `${G.DADOS.config.regras.encargos_sobre_he_pct}% sobre HE + DSR`)}
+        ${kpi(`Custo total de HE <span class="pill he">TOTAL</span>`, U.brl(k.he + k.encargos), "HE + DSR + encargos (maior que o card \"HE + DSR\" da Visão executiva, que não soma encargos)", "dest")}
         ${kpi("Adicional noturno", U.brl0(noturno), "adicional + hora reduzida + DSR")}
         ${kpi("HE / remuneração bruta", U.pct(k.pctRem), `Remuneração comparável: ${U.brl0(k.rem)}`)}
       </div>

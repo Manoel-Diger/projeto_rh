@@ -102,6 +102,9 @@
     const comHE = L.filter((c) => c.he_h > 0);
     return {
       n: L.length, he, heV, heH, dsr: U.soma(L, "dsr_he"), rem,
+      he50_v: U.soma(L, "he50_v"), he50_h: U.soma(L, "he50_h"),
+      he100_v: U.soma(L, "he100_v"), he100_h: U.soma(L, "he100_h"),
+      heBH_v: U.soma(L, "he_bh_v"), heBH_h: U.soma(L, "he_bh_h"),
       pctRem: rem ? (he / rem) * 100 : 0,
       nComHE: comHE.length,
       mediaHE: comHE.length ? heH / comHE.length : 0,

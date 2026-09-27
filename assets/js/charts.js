@@ -8,6 +8,7 @@
     atual: U.css("--atual"), proposto: U.css("--proposto"), he: U.css("--he"),
     alerta: U.css("--alerta"), ok: U.css("--ok"), ink: U.css("--ink"), muted: U.css("--muted"),
     line: U.css("--line-2"), ink3: U.css("--ink-3"), medio: U.css("--medio"),
+    colab: U.css("--colab"),
   });
 
   C.init = () => {
