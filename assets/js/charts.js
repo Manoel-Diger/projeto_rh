@@ -13,7 +13,7 @@
 
   C.init = () => {
     Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
-    Chart.defaults.font.size = 12;
+    Chart.defaults.font.size = 10.5;
     Chart.defaults.color = U.css("--muted");
     Chart.defaults.plugins.legend.labels.boxWidth = 10;
     Chart.defaults.plugins.legend.labels.boxHeight = 10;

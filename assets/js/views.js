@@ -9,13 +9,15 @@
   const insight = (i) => `<div class="insight ${i.nivel}"><span class="tag">${U.esc(i.tema)}</span><h4>${U.esc(i.titulo)}</h4><p>${U.esc(i.texto)}</p></div>`;
   const semDados = () => `<div class="card vazio">Nenhum colaborador corresponde aos filtros selecionados.</div>`;
 
+  // Ranking em formato de tabela: posição, colaborador (com função/área), barra proporcional e valor.
   const barList = (items, fmt, cor) => {
     const max = Math.max(...items.map((i) => i.v), 1);
-    return `<div>${items.map((i, n) => `<div style="display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line-2)">
-      <span class="rodape-nota num">${n + 1}</span>
-      <div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px">${U.esc(U.titulo(i.nome))}</div>
-      <div style="height:5px;background:var(--line-2);border-radius:3px;margin-top:3px"><div style="height:5px;width:${(i.v / max) * 100}\%;background:${cor};border-radius:3px"></div></div></div>
-      <b class="num" style="font-size:13px">${fmt(i.v)}</b></div>`).join("")}</div>`;
+    if (!items.length) return `<p class="sub">Sem ocorrências no período.</p>`;
+    return `<table class="rk"><tbody>${items.map((i, n) => `<tr>
+      <td class="rk-pos num">${n + 1}</td>
+      <td class="rk-nome"><span>${U.esc(U.titulo(i.nome))}</span>${i.sub ? `<small>${U.esc(i.sub)}</small>` : ""}</td>
+      <td class="rk-barra"><div><i style="width:${(i.v / max) * 100}%;background:${cor}"></i></div></td>
+      <td class="rk-val num">${fmt(i.v)}</td></tr>`).join("")}</tbody></table>`;
   };
 
   // Nomes curtos de mês para colunas da tabela comparativa (independe de locale).
@@ -27,7 +29,7 @@
   const tabelaComparativoMensalHE = () => {
     const mensal = U.comparativoMensal();
     if (!mensal.length) return "";
-    const uniHist = U.kpisHistoricos(U.dadosHistoricosFiltrados()).nComHE; // colaboradores únicos no Ano filtrado
+    const uniHist = U.kpisHistoricos(U.dadosHistoricosFiltrados()).nComHE;
     const linhas = [
       { t: "HE 50%", f: (x) => x.he50_v, tipo: "money" },
       { t: "HE 100%", f: (x) => x.he100_v, tipo: "money" },
@@ -148,7 +150,7 @@
     const L0 = U.dadosFiltrados();
     if (!L0.length) { view.innerHTML = semDados(); return; }
     // Com MÊS = TODOS, L0 traz um registro por colaborador/mês; consolida por matrícula
-    // para os gráficos e a tabela não repetirem a mesma pessoa uma vez por mês.
+    // para os gráficos e a tabela não repetirem a mesma pessoa una vez por mês.
     const L = U.state.mes === "TODOS" ? U.consolidaColaboradores(L0) : L0;
     const c = K();
     const t = (f) => U.soma(L, f);
@@ -270,16 +272,16 @@
     // para que cada pessoa apareça uma vez, com os totais do período filtrado.
     const L = U.state.mes === "TODOS" ? U.consolidaColaboradores(L0) : L0;
     const c = K();
-    const top = (arr, f, n = 10) => [...arr].filter((x) => f(x) > 0).sort((a, b) => f(b) - f(a)).slice(0, n).map((x) => ({ nome: x.nome, v: f(x) }));
+    const top = (arr, f, n = 10) => [...arr].filter((x) => f(x) > 0).sort((a, b) => f(b) - f(a)).slice(0, n).map((x) => ({ nome: x.nome, v: f(x), sub: [x.funcao ? U.titulo(x.funcao) : "", x.area || ""].filter(Boolean).join(" · ") }));
     const fg = U.agrupa(L.filter((x) => x.situacao !== "Demitido"), "funcao").filter((g) => g.n >= 2).sort((a, b) => b.mediaH - a.mediaH).slice(0, 10).map((g) => ({ nome: `${g.chave} (${g.n})`, v: g.mediaH }));
     view.innerHTML = `
       <div class="grid g-2">
-        <div class="card"><h3>Maior custo de HE</h3><p class="sub">HE + DSR no período.</p>${barList(top(L, (x) => x.he_total), U.brl0, c.he)}</div>
-        <div class="card"><h3>Mais horas extras</h3><p class="sub">Horas no período.</p>${barList(top(L, (x) => x.he_h), (v) => U.n1(v) + " h", c.medio)}</div>
-        <div class="card"><h3>HE mais pesada sobre o salário</h3><p class="sub">HE + DSR como % do salário base.</p>${barList(top(L, (x) => x.he_pct_salario), (v) => U.n1(v) + "%", c.alerta)}</div>
+        <div class="card"><h3>Maior custo de HE</h3><p class="sub">HE + DSR no período.</p>${barList(top(L, (x) => x.he_total), U.brl0, c.atual)}</div>
+        <div class="card"><h3>Mais horas extras</h3><p class="sub">Horas no período.</p>${barList(top(L, (x) => x.he_h), (v) => U.n1(v) + " h", c.atual)}</div>
+        <div class="card"><h3>Maior impacto da HE sobre o salário</h3><p class="sub">HE + DSR como % do salário base.</p>${barList(top(L, (x) => x.he_pct_salario), (v) => U.n1(v) + "%", c.atual)}</div>
         <div class="card"><h3>Funções com maior média de HE</h3><p class="sub">Horas por colaborador (funções com 2+ pessoas).</p>${barList(fg, (v) => U.n1(v) + " h", c.atual)}</div>
-        <div class="card"><h3>Mais atrasos e saídas antecipadas</h3><p class="sub">Horas no período.</p>${barList(top(L, (x) => x.atrasos_h), (v) => U.n1(v) + " h", c.ink3)}</div>
-        <div class="card"><h3>Mais horas de falta</h3><p class="sub">Horas faltas descontadas.</p>${barList(top(L, (x) => x.faltas_h), (v) => U.n1(v) + " h", c.muted)}</div>
+        <div class="card"><h3>Maior volume de atrasos</h3><p class="sub">Atrasos e saídas antecipadas em horas.</p>${barList(top(L, (x) => x.atrasos_h), (v) => U.n1(v) + " h", c.atual)}</div>
+        <div class="card"><h3>Maior volume de faltas</h3><p class="sub">Horas faltas descontadas.</p>${barList(top(L, (x) => x.faltas_h), (v) => U.n1(v) + " h", c.muted)}</div>
       </div>`;
   };
 
