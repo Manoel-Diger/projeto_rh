@@ -4,7 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RH e Eficiência Operacional – HE Belém</title>
-<link rel="stylesheet" href="assets/css/style.css?v=20260930">
+<meta name="description" content="Painel executivo de horas extras, custos, jornadas e simulação de turno da Filial BEL (Belém/PA).">
+<meta name="theme-color" content="#0b1118">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1118'/%3E%3Cpath d='M8 23V14M14 23V9M20 23v-6M26 23H6' stroke='%23c9822b' stroke-width='2.4' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css?v=20260930c">
 </head>
 <body>
 <div class="app">
@@ -14,14 +18,14 @@
       <span>Horas extras · Filial BEL</span>
     </div>
     <nav class="nav" id="nav" aria-label="Seções">
-      <button data-aba="exec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Visão executiva</button>
-      <button data-aba="he"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horas extras</button>
-      <button data-aba="custos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg>Custos</button>
-      <button data-aba="jornadas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M6 8v8M12 6v12M18 9v6"/></svg>Jornadas e turnos</button>
-      <button data-aba="rankings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21V11M16 21V5M12 21v-6M4 21h16"/></svg>Rankings</button>
-      <button data-aba="problemas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg>Problemas e insights</button>
-      <button data-aba="simulacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Simulação 13h–22h</button>
-      <button data-aba="qualidade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l4 4 10-10"/></svg>Qualidade dos dados</button>
+      <button type="button" data-aba="exec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Visão executiva</button>
+      <button type="button" data-aba="he"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horas extras</button>
+      <button type="button" data-aba="custos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6"/></svg>Custos</button>
+      <button type="button" data-aba="jornadas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M6 8v8M12 6v12M18 9v6"/></svg>Jornadas e turnos</button>
+      <button type="button" data-aba="rankings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21V11M16 21V5M12 21v-6M4 21h16"/></svg>Rankings</button>
+      <button type="button" data-aba="problemas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l10 18H2L12 3zM12 10v5M12 18h.01"/></svg>Problemas e insights</button>
+      <button type="button" data-aba="simulacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Simulação 13h–22h</button>
+      <button type="button" data-aba="qualidade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l4 4 10-10"/></svg>Qualidade dos dados</button>
     </nav>
     <div class="side-foot" id="side-foot"></div>
   </aside>
@@ -32,8 +36,8 @@
         <h1 id="h-titulo">Visão executiva</h1>
         <p id="h-sub"></p>
       </div>
-      <div class="filtro"><label for="f-ano">Ano</label><select id="f-ano"></select></div>
-      <div class="filtro"><label for="f-mes">Mês</label><select id="f-mes"></select></div>
+      <div class="filtro"><label id="l-ano">Ano</label><div class="msel" id="f-ano"></div></div>
+      <div class="filtro"><label id="l-mes">Mês</label><div class="msel" id="f-mes"></div></div>
       <div class="filtro"><label for="f-area">Área</label><select id="f-area"></select></div>
       <div class="filtro"><label for="f-turno">Turno</label><select id="f-turno"></select></div>
       <div class="filtro"><label for="f-sit">Situação</label><select id="f-sit"></select></div>
@@ -51,12 +55,12 @@
 </div>
 
 <noscript>Ative o JavaScript para visualizar o painel.</noscript>
-<script src="data/processado/dados.js?v=20260930"></script>
+<script src="data/processado/dados.js?v=20260930c"></script>
 <script src="assets/vendor/chart.umd.js"></script>
-<script src="assets/js/utils.js?v=20260930"></script>
-<script src="assets/js/charts.js?v=20260930"></script>
-<script src="assets/js/simulacao.js?v=20260930"></script>
-<script src="assets/js/views.js?v=20260930"></script>
-<script src="assets/js/app.js?v=20260930"></script>
+<script src="assets/js/utils.js?v=20260930c"></script>
+<script src="assets/js/charts.js?v=20260930c"></script>
+<script src="assets/js/simulacao.js?v=20260930c"></script>
+<script src="assets/js/views.js?v=20260930c"></script>
+<script src="assets/js/app.js?v=20260930c"></script>
 </body>
 </html>

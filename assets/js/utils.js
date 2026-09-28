@@ -26,7 +26,12 @@
   };
 
   // ---- estado global ----
-  U.state = { ano: "TODOS", mes: null, aba: "exec", filtros: { area: "", turno: "", situacao: "", funcao: "", busca: "" }, sort: {} };
+  // anos / meses: seleção múltipla (lista vazia = "Todos"). Os meses são chaves "AAAA-MM", o que permite
+  // combinar meses de anos diferentes (ex.: 2025-01 + 2026-01).
+  // mes: valor derivado (ver U.sincronizaPeriodo) — a chave do mês quando há exatamente UM mês selecionado
+  // e "TODOS" em qualquer outro caso (nenhum ou vários meses). É o que as telas já usavam para escolher
+  // entre a visão de um mês e a visão consolidada.
+  U.state = { anos: [], meses: [], mes: "TODOS", aba: "exec", filtros: { area: "", turno: "", situacao: "", funcao: "", busca: "" }, sort: {} };
 
   U.mesDados = (m) => {
     const mesAlvo = m || U.state.mes;
@@ -36,30 +41,80 @@
     return G.DADOS.meses[mesAlvo];
   };
 
-  // Anos com dados no histórico (não é afetado pelo filtro de Ano — usado para montar o próprio seletor de Ano).
+  // Anos com dados no histórico (não é afetado pela seleção — usado para montar o próprio seletor de Ano).
   U.anosDisponiveis = () => [...new Set(Object.keys(G.DADOS.meses).map((m) => m.split("-")[0]))].sort();
+  U.todasChaves = () => Object.keys(G.DADOS.meses).sort();
 
-  // Meses disponíveis, já restritos ao Ano selecionado em U.state.ano ("TODOS" = todos os anos).
-  // Por ser usada por todas as agregações de "Todos os meses" (todosColaboradores, comparativoMensal etc.),
-  // o filtro de Ano passa a valer automaticamente em qualquer lugar que já usava mesesOrdenados().
-  U.mesesOrdenados = () => Object.keys(G.DADOS.meses)
-    .filter((m) => !U.state.ano || U.state.ano === "TODOS" || m.startsWith(U.state.ano + "-"))
-    .sort();
-  U.todosColaboradores = () => U.mesesOrdenados().flatMap((m) => G.DADOS.meses[m].colaboradores.map((c) => ({ ...c, _mes: m })));
-  U.dadosHistoricosFiltrados = () => U.aplicaFiltros(U.todosColaboradores());
+  // Meses que o seletor de Mês oferece: restritos aos Anos selecionados (lista vazia = todos os anos).
+  U.mesesDisponiveis = () => U.todasChaves()
+    .filter((m) => !U.state.anos.length || U.state.anos.includes(m.split("-")[0]));
+
+  // Meses efetivamente em análise: os marcados no seletor de Mês; se nenhum estiver marcado, todos os
+  // disponíveis. É usada por todas as agregações consolidadas (todosColaboradores, comparativoMensal etc.).
+  U.mesesOrdenados = () => {
+    const disp = U.mesesDisponiveis();
+    return U.state.meses.length ? disp.filter((m) => U.state.meses.includes(m)) : disp;
+  };
+
+  // Mantém a seleção coerente: descarta meses fora dos Anos selecionados e recalcula U.state.mes.
+  U.sincronizaPeriodo = () => {
+    const disp = new Set(U.mesesDisponiveis());
+    U.state.meses = U.state.meses.filter((m) => disp.has(m)).sort();
+    U.state.mes = U.state.meses.length === 1 ? U.state.meses[0] : "TODOS";
+  };
+
+  U.MES_CURTO = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+  U.mesCurto = (m) => { const [a, mm] = String(m).split("-"); return `${U.MES_CURTO[+mm - 1]}/${a.slice(-2)}`; };
+
+  // Texto do período em análise (subtítulo e botão do seletor).
+  U.periodoLabel = () => {
+    const { anos, meses, mes } = U.state;
+    if (mes !== "TODOS") return U.mesLabel(mes);
+    if (!meses.length) return anos.length ? `Todos os meses de ${anos.join(" e ")}` : "Todos os meses";
+    return meses.length <= 4 ? meses.map(U.mesCurto).join(", ") : `${meses.length} meses selecionados`;
+  };
+
+  // true quando há mais de um mês em análise (ou nenhum filtrado): visão consolidada, sem detalhe de um mês.
+  U.multiplosMeses = () => U.state.mes === "TODOS";
+
+  // Cores por ano para os gráficos mensais: o ano mais recente usa a cor do indicador e os anteriores
+  // usam tons progressivamente mais claros dela, para que cada indicador mantenha sua identidade visual.
+  U.clareia = (hex, f) => {
+    const m = /^#([0-9a-f]{6})$/i.exec(String(hex).trim());
+    if (!m) return hex;
+    const n = parseInt(m[1], 16), mix = (c) => Math.round(c + (255 - c) * f);
+    return "#" + [n >> 16 & 255, n >> 8 & 255, n & 255].map((c) => mix(c).toString(16).padStart(2, "0")).join("");
+  };
+  U.coresPorAno = (base, anos) => {
+    const ord = [...anos].sort(), passos = [0, 0.45, 0.68, 0.8];
+    const r = {};
+    ord.forEach((a, i) => { r[a] = U.clareia(base, passos[Math.min(ord.length - 1 - i, passos.length - 1)]); });
+    return r;
+  };
+
+  U.colaboradoresDosMeses = (lista) => lista.flatMap((m) => G.DADOS.meses[m].colaboradores.map((c) => ({ ...c, _mes: m })));
+  U.todosColaboradores = () => U.colaboradoresDosMeses(U.mesesOrdenados());
+
+  // Meses da tabela/comparativo mensal e do total histórico: com vários meses (ou nenhum) selecionados,
+  // são os meses selecionados; com UM mês selecionado, a tabela continua mostrando todo o histórico do
+  // Ano filtrado como contexto (comportamento original), e o mês escolhido é o que alimenta cards e gráficos.
+  U.mesesComparativo = () => (U.state.mes === "TODOS" ? U.mesesOrdenados() : U.mesesDisponiveis());
+  U.dadosHistoricosFiltrados = () => U.aplicaFiltros(U.colaboradoresDosMeses(U.mesesComparativo()));
   U.kpisHistoricos = (L) => {
     const k = U.kpis(L);
     const unicos = new Set(L.map((c) => c.matricula || c.nome));
     const unicosHE = new Set(L.filter((c) => c.he_h > 0).map((c) => c.matricula || c.nome));
     return { ...k, n: unicos.size, nComHE: unicosHE.size };
   };
-  U.comparativoMensal = () => U.mesesOrdenados().map((mes) => {
+  U.comparativoMensal = () => U.mesesComparativo().map((mes) => {
     const L = U.aplicaFiltros(G.DADOS.meses[mes].colaboradores);
     const k = U.kpis(L);
     return { mes, ...k };
   });
   U.mesAnterior = () => {
-    const l = U.mesesOrdenados(), i = l.indexOf(U.state.mes);
+    // usa a lista de meses disponíveis (restrita só pelo Ano), não a seleção — com um único mês
+    // selecionado a seleção teria só ele mesmo e a comparação com o mês anterior deixaria de existir
+    const l = U.mesesDisponiveis(), i = l.indexOf(U.state.mes);
     return i > 0 ? l[i - 1] : null;
   };
 
@@ -148,7 +203,7 @@
       return st.asc ? r : -r;
     });
     const lim = opts.limite || sorted.length;
-    const head = cols.map((c) => `<th class="${c.n ? "n" : ""} ${c.k === st.k ? "sorted" + (st.asc ? " asc" : "") : ""}" data-t="${id}" data-k="${c.k}">${c.t}</th>`).join("");
+    const head = cols.map((c) => `<th scope="col" class="${c.n ? "n" : ""} ${c.k === st.k ? "sorted" + (st.asc ? " asc" : "") : ""}" data-t="${id}" data-k="${c.k}">${c.t}</th>`).join("");
     const body = sorted.slice(0, lim).map((r) => "<tr>" + cols.map((c) => `<td class="${c.n ? "n" : ""}">${c.f ? c.f(r) : U.esc(r[c.k])}</td>`).join("") + "</tr>").join("");
     U.tabelasReg[id] = { cols, linhas: sorted, opts };
     return `<div class="tools"><small>${sorted.length} registros${lim < sorted.length ? " (mostrando " + lim + ")" : ""}</small>
@@ -169,7 +224,7 @@
     const blob = new Blob(["\ufeff" + linhas.join("\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `he_belem_${id}_${U.state.mes}.csv`;
+    a.download = `he_belem_${id}_${U.state.mes !== "TODOS" ? U.state.mes : (U.state.meses.length ? "selecao" : "todos")}.csv`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };

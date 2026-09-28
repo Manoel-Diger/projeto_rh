@@ -5,7 +5,7 @@
   "fim": "31/08/2026",
   "mes": "2026-08"
  },
- "gerado_em": "24/09/2026 17:37",
+ "gerado_em": "28/09/2026 15:01",
  "fonte": {
   "folha": "2026-08_folha.pdf",
   "base_mestra": "Base_Mestra_RH_Belem.xlsx",
@@ -3859,74 +3859,74 @@
     "f_reg": "000177416"
    }
   ],
-  "nota_horas": "Os VALORES conferem com o resumo da folha. As HORAS lidas por colaborador podem diferir ligeiramente do resumo (<1%) por arredondamento de referência do relatório."
+  "nota_horas": "Conferência feita sobre os valores em R$. As horas por colaborador podem divergir do resumo da folha em menos de 1%, por arredondamento do relatório de origem."
  },
  "insights": [
   {
    "nivel": "info",
    "tema": "Custos",
-   "titulo": "Peso das horas extras na folha",
-   "texto": "As HE (incluindo DSR) somam R$ 37.970,44, o equivalente a 19.2% da remuneração bruta do mês (R$ 30.625,80 em HE e R$ 7.344,64 de reflexo em DSR). Cada R$ 1,00 pago em HE gera cerca de R$ 0.24 de DSR adicional."
+   "titulo": "HE + DSR equivalem a 19,2% da remuneração bruta",
+   "texto": "Total de R$ 37.970,44: R$ 30.625,80 em HE e R$ 7.344,64 em DSR. O DSR adiciona R$ 0,24 para cada R$ 1,00 pago em HE."
   },
   {
    "nivel": "alto",
    "tema": "Concentração",
-   "titulo": "Poucos colaboradores concentram o custo",
-   "texto": "Os 10 maiores geradores de HE respondem por 36% do custo (R$ 13.490,99). 67 de 79 colaboradores tiveram HE no mês; o primeiro do ranking é Heremilton Ferreira Gurjão (R$ 1.831,96)."
+   "titulo": "10 colaboradores concentram 36% do custo de HE",
+   "texto": "Os 10 maiores custos somam R$ 13.490,99 de R$ 37.970,44. 67 de 79 colaboradores tiveram HE no mês. Maior custo individual: Heremilton Ferreira Gurjão (R$ 1.831,96)."
   },
   {
    "nivel": "alto",
    "tema": "Conformidade",
-   "titulo": "19 colaboradores acima de 44h de HE no mês",
-   "texto": "Referência de 2h por dia útil (~44h/mês). Somam 236h acima do limite. Vale checar acordo de compensação/banco de horas e risco trabalhista."
+   "titulo": "19 colaboradores acima de 44 h de HE no mês",
+   "texto": "Excesso total de 236 h sobre a referência de 44 h/mês (2 h por dia útil). Verificar enquadramento em acordo de compensação ou banco de horas."
   },
   {
    "nivel": "medio",
    "tema": "Jornadas",
-   "titulo": "Turno da tarde x turno comercial",
-   "texto": "No horário da tarde (12h–21h e similares), a média é 19.9h de HE por colaborador, contra 30.5h no comercial. Amostra: 12 colaboradores na tarde e 53 no comercial (somente horários já confirmados)."
+   "titulo": "HE por colaborador: tarde 19,9 h x comercial 30,5 h",
+   "texto": "Tarde (12h–21h e similares): 12 colaboradores, média de 19,9 h de HE. Comercial: 53 colaboradores, média de 30,5 h. Considera apenas horários confirmados."
   },
   {
    "nivel": "alto",
    "tema": "Jornadas",
-   "titulo": "O horário 08h–17h concentra 84% das horas extras (entre horários confirmados)",
-   "texto": "44 colaboradores em 08h–17h somam 1564h de HE (média de 35.5h por pessoa). Se a presença cai bruscamente ao fim desse horário, isso pode indicar que o fim da tarde está sendo coberto por HE — hipótese a confirmar com o cartão-ponto. Veja o gráfico 'O dia da filial' e a simulação de turno."
+   "titulo": "08h–17h concentra 84% das horas de HE entre os horários confirmados",
+   "texto": "44 colaboradores em 08h–17h somam 1564 h de HE, média de 35,5 h por colaborador."
   },
   {
    "nivel": "info",
    "tema": "Áreas",
-   "titulo": "Distribuição é a área com maior custo de HE",
-   "texto": "Distribuição soma R$ 24.479,64 (64% do total), média de 32.4h de HE por colaborador."
+   "titulo": "Distribuição tem o maior custo de HE",
+   "texto": "Distribuição soma R$ 24.479,64 (64% do total), com média de 32,4 h de HE por colaborador."
   },
   {
    "nivel": "medio",
    "tema": "Dados",
    "titulo": "11 colaboradores sem horário confirmado",
-   "texto": "Representam 14% do quadro ativo. Eles ficam fora das análises de turno e da simulação até o horário ser confirmado no cartão-ponto e preenchido na Base Mestra."
+   "texto": "Correspondem a 14% do quadro ativo e ficam fora das análises de turno e da simulação até o horário ser confirmado no cartão-ponto e cadastrado na Base Mestra."
   },
   {
    "nivel": "info",
    "tema": "Absenteísmo",
    "titulo": "Faltas, atrasos e atestados",
-   "texto": "33 colaboradores tiveram atraso/saída antecipada (56h no total). Descontos de faltas e atrasos: R$ 1.359,94. Atestados: 40h."
+   "texto": "33 colaboradores com atraso ou saída antecipada (56 h no total). Desconto de faltas e atrasos: R$ 1.359,94. Atestados: 40 h."
   },
   {
    "nivel": "medio",
    "tema": "Frota",
    "titulo": "Multas de trânsito descontadas em folha",
-   "texto": "3 colaboradores com desconto de multa, totalizando R$ 169,13. Indicador útil para o programa de segurança da frota."
+   "texto": "3 colaboradores com desconto de multa, total de R$ 169,13."
   },
   {
    "nivel": "info",
    "tema": "Custos",
    "titulo": "HE a 100%",
-   "texto": "17 colaboradores com HE a 100% (145h, R$ 2.796,94). Confirmar se são domingos/feriados planejados."
+   "texto": "17 colaboradores com HE a 100% (145 h, R$ 2.796,94). Validar se correspondem a trabalho programado em domingos e feriados."
   },
   {
    "nivel": "info",
    "tema": "Pessoas",
    "titulo": "Movimentação do quadro no mês",
-   "texto": "4 admissões e 2 desligamentos no mês. Rescisões somam R$ 25.680,44 (fora da remuneração comparável)."
+   "texto": "4 admissões e 2 desligamentos. Rescisões: R$ 25.680,44 (fora da remuneração bruta de referência)."
   }
  ]
 }

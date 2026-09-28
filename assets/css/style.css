@@ -776,7 +776,7 @@ tr:hover td{
   }
 
   .card:hover{
-    border-color:#c2ccd6;
+    border-color:var(--faint);
   }
 }
 
@@ -1992,4 +1992,263 @@ td{
   .rk-nome small{
     font-size:9px;
   }
+}
+
+/* =========================================================
+   SELETORES DE ANO E MÊS (seleção múltipla)
+   ========================================================= */
+
+.msel{
+  position:relative;
+}
+
+.msel-btn{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:2px 6px;
+  height:24px;
+  font-size:11px;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+
+.msel-btn:hover,
+.msel.aberto .msel-btn{
+  border-color:var(--ink-3);
+}
+
+.msel-txt{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.msel-btn svg{
+  flex:none;
+  color:var(--muted);
+}
+
+.filtro:has(#f-ano) .msel{
+  width:114px;
+}
+
+.filtro:has(#f-mes) .msel{
+  width:118px;
+}
+
+.msel-pop{
+  position:absolute;
+  top:calc(100% + 4px);
+  left:0;
+  z-index:30;
+  min-width:100%;
+  max-height:min(70vh,460px);
+  overflow-y:auto;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+}
+
+.msel-pop[hidden]{
+  display:none;
+}
+
+.msel-pop.dir{
+  left:auto;
+  right:0;
+}
+
+#f-mes .msel-pop{
+  width:max-content;
+}
+
+.filtro .msel .mchk{
+  font-size:12px;
+  margin:0;
+  color:var(--text);
+}
+
+.filtro .msel .mchk.ano{
+  color:var(--muted);
+}
+
+.filtro .msel .mchk.mes{
+  font-size:11px;
+}
+
+.mchk{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  cursor:pointer;
+  color:var(--text);
+  white-space:nowrap;
+}
+
+/* neutraliza o estilo genérico ".filtro input" (campos de texto), que também alcança as caixas de seleção */
+.msel .mchk input[type="checkbox"]{
+  width:14px !important;
+  height:14px !important;
+  min-width:0 !important;
+  padding:0;
+  margin:0;
+  flex:none;
+  accent-color:var(--he);
+  cursor:pointer;
+}
+
+.mchk.todos{
+  padding-bottom:6px;
+  border-bottom:1px solid var(--line);
+  font-weight:600;
+}
+
+.mchk.ano{
+  font-weight:600;
+  color:var(--muted);
+}
+
+.mgrupo{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.mgrade{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(38px,1fr));
+  gap:4px;
+}
+
+/* cada mês vira um botão marcável; a caixa fica invisível mas continua acessível pelo teclado */
+.mchk.mes{
+  justify-content:center;
+  padding:4px 0;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  font-size:11px;
+}
+
+.msel .mchk.mes input[type="checkbox"]{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  width:100% !important;
+  height:100% !important;
+}
+
+.mchk.mes:has(input:checked){
+  background:var(--he);
+  border-color:var(--he);
+  color:#fff;
+  font-weight:600;
+}
+
+.mchk.mes:has(input:focus-visible),
+.msel-btn:focus-visible{
+  outline:2px solid var(--he);
+  outline-offset:1px;
+}
+
+.mchk.mes.vazio{
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+.mchk.mes.vazio input{
+  cursor:not-allowed;
+}
+
+@media print{
+  .msel-pop{
+    display:none !important;
+  }
+}
+
+/* os seletores de Ano/Mês não encolhem com a barra apertada (o título é que cede espaço) */
+.filtro:has(.msel){
+  flex:0 0 auto;
+}
+
+/* celular: os seletores ocupam a coluna inteira, como os demais campos do cabeçalho */
+@media (max-width:600px){
+  .filtro:has(#f-ano) .msel,
+  .filtro:has(#f-mes) .msel{
+    width:100%;
+  }
+
+  .msel-btn{
+    height:31px;
+    padding:4px 7px;
+    font-size:11.5px;
+  }
+
+  .msel-pop{
+    max-width:calc(100vw - 20px);
+  }
+
+  #f-mes .msel-pop{
+    width:min(300px,calc(100vw - 20px));
+  }
+
+  .mgrade{
+    grid-template-columns:repeat(4,minmax(38px,1fr));
+  }
+}
+
+
+/* =========================================================
+   ACABAMENTO
+   ========================================================= */
+
+/* valor do card + etiqueta de variação: quebra de linha em vez de cortar na borda do card */
+.kpi .val{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  column-gap:.3em;
+  row-gap:2px;
+}
+
+.kpi .val .delta{
+  margin-left:0;
+  white-space:nowrap;
+}
+
+.kpi .det .delta{
+  white-space:nowrap;
+}
+
+/* tabela comparativa mensal: a coluna "Indicador" fica fixa ao rolar para os meses seguintes */
+.tabela-mensal th:first-child,
+.tabela-mensal td:first-child{
+  position:sticky;
+  left:0;
+  z-index:2;
+  background:var(--surface);
+  box-shadow:1px 0 0 var(--line-2);
+}
+
+.tabela-mensal th:first-child{
+  z-index:3;
+  background:#17222e;
+}
+
+.tabela-mensal tr.linha-dest td:first-child{
+  background:var(--surface);
 }

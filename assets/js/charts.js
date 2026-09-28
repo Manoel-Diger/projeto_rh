@@ -63,6 +63,30 @@
     },
   });
 
+  // barras agrupadas por categoria (ex.: mês), uma série por ano, cada uma com sua cor.
+  // Séries com valor nulo (mês inexistente naquele ano) simplesmente não desenham barra.
+  // comLegenda = true mostra a legenda dos anos e o ano no tooltip.
+  C.barrasAgrupadas = (id, labels, series, { fmt, tooltipFmt, comLegenda } = {}) => C.make(id, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: series.map((s) => ({
+        label: s.nome, data: s.dados, backgroundColor: s.cor,
+        borderColor: s.borda || s.cor, borderWidth: s.borda ? 1 : 0, borderRadius: 4, maxBarThickness: 34,
+        // com poucos meses, aproxima as barras dos anos dentro do mesmo grupo
+        categoryPercentage: Math.min(0.8, 0.14 * labels.length + 0.05), barPercentage: 0.95,
+      })),
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: !!comLegenda, position: "bottom" },
+        tooltip: { callbacks: { label: (c) => ` ${comLegenda ? c.dataset.label + ": " : ""}${(tooltipFmt || fmt || String)(c.parsed.y)}` } },
+      },
+      scales: { y: eixo(fmt), x: { grid: { display: false }, border: { display: false } } },
+    },
+  });
+
   C.rosca = (id, labels, valores, cores, fmt) => C.make(id, {
     type: "doughnut",
     data: { labels, datasets: [{ data: valores, backgroundColor: cores, borderColor: "#fff", borderWidth: 2 }] },

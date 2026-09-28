@@ -59,40 +59,40 @@
     const p = Sim.p;
 
     view.innerHTML = `
-      <div class="aviso"><b>Como ler esta simulação.</b> A folha informa <i>quantas</i> horas extras cada pessoa fez, mas não <i>a que horas</i>. Por isso, o quanto das HE do grupo 12h–21h
-      seria absorvido pela jornada normal das 21h–22h é uma <b>hipótese ajustável</b> (barra abaixo), não um dado medido. Para calibrar, cruze com o cartão-ponto: some as HE feitas entre 21h e 22h
-      no grupo e informe esse percentual. ${pend ? `Há ${pend} colaboradores sem horário confirmado, que ficam fora do grupo.` : ""}</div>
+      <div class="aviso"><b>Premissa central.</b> A folha registra <i>quantas</i> horas extras cada colaborador fez, mas não <i>em que horário</i>. O percentual das HE do grupo 12h–21h
+      absorvido pela jornada normal das 21h–22h é, portanto, uma <b>premissa ajustável</b> (barra abaixo), não um dado medido. Para calibrar, apurar no cartão-ponto as HE realizadas
+      entre 21h e 22h pelo grupo e informar o percentual. ${pend ? `${pend} colaboradores sem horário confirmado ficam fora do grupo.` : ""}</div>
 
       <div class="sim-layout">
         <div class="card ctl">
-          <div><h3>Premissas</h3><p class="sub">Ajuste e veja o resultado na hora.</p></div>
-          ${slider("s-abs", "HE que passam a ser jornada normal (21h–22h)", 0, 100, 1, p.abs, "%")}
-          ${slider("s-apos", "HE restantes que ocorrem após 22h (noturnas)", 0, 100, 1, p.apos22, "%")}
+          <div><h3>Premissas</h3><p class="sub">O resultado é recalculado a cada alteração.</p></div>
+          ${slider("s-abs", "HE absorvidas pela jornada normal (21h–22h)", 0, 100, 1, p.abs, "%")}
+          ${slider("s-apos", "HE restantes realizadas após 22h (noturnas)", 0, 100, 1, p.apos22, "%")}
           ${slider("s-adic", "Adicional noturno", 0, 50, 1, p.adic, "%")}
           ${slider("s-dias", "Dias trabalhados no mês", 18, 26, 1, p.dias, "")}
-          <div class="linha"><label for="s-custo">Custo extra por colaborador/dia (jantar, transporte)</label><input id="s-custo" type="number" min="0" step="0.5" value="${p.custoDia}"></div>
+          <div class="linha"><label for="s-custo">Custo adicional por colaborador/dia (jantar, transporte)</label><input id="s-custo" type="number" min="0" step="0.5" value="${p.custoDia}"></div>
           <div class="linha"><label for="s-enc">Encargos sobre HE (%)</label><input id="s-enc" type="number" min="0" step="0.5" value="${p.enc}"></div>
           <button class="btn" id="s-reset" type="button">Voltar às premissas padrão</button>
           <div class="rodape-nota">Grupo simulado: <b>${g.length}</b> colaboradores em <b>${U.esc(cfg.horarios_que_migram.join(", "))}</b> → <b>${U.esc(cfg.horario_proposto)}</b>.
-          Os demais (08h–17h etc.) não mudam.</div>
+          Demais horários (08h–17h etc.) mantidos.</div>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
           <div id="sim-res" style="display:flex;flex-direction:column;gap:16px"></div>
           <div class="card">
             <h3>Cobertura ao longo do dia</h3>
-            <p class="sub">Colaboradores presentes por hora, cenário atual (08h–17h + 12h–21h) x proposto (08h–17h + 13h–22h). Presença nominal, sem descontar intervalos.</p>
+            <p class="sub">Colaboradores por hora: cenário atual (08h–17h + 12h–21h) x proposto (08h–17h + 13h–22h). Presença nominal, sem desconto de intervalos.</p>
             <div class="chart"><canvas id="c-cob"></canvas></div>
             <div id="sim-cob-nota" class="rodape-nota" style="margin-top:8px"></div>
           </div>
           <div class="card">
-            <h3>Pontos de atenção antes de decidir</h3>
+            <h3>Pontos de atenção</h3>
             <ul class="lista">
-              <li><b>Perde-se a hora das 12h–13h</b>: a cobertura do início da tarde cai (veja o gráfico) e pode afetar a expedição/carregamento do primeiro turno da tarde.</li>
-              <li><b>Ganha-se a hora das 21h–22h</b> dentro da jornada normal, onde hoje só há HE ou ninguém.</li>
-              <li><b>Após as 22h começa o adicional noturno</b> (20% + hora reduzida de 52min30s). Se as HE continuarem a acontecer depois das 22h, o custo por hora sobe.</li>
-              <li>Custos que não estão na folha: <b>transporte e segurança no retorno à noite</b>, alimentação (jantar) e possível revisão do vale-transporte.</li>
-              <li>Mudança de horário deve ser validada com o jurídico/RH e, se houver, com o acordo coletivo/sindicato, com comunicação prévia à equipe.</li>
+              <li><b>Saída da faixa 12h–13h</b>: reduz a cobertura no início da tarde (ver gráfico).</li>
+              <li><b>Entrada da faixa 21h–22h</b> na jornada normal, hoje coberta por HE ou sem cobertura.</li>
+              <li><b>Após as 22h incide adicional noturno</b> (20%) e hora reduzida de 52min30s. HE mantidas depois desse horário têm custo por hora maior.</li>
+              <li>Custos fora da folha: <b>transporte e segurança no retorno noturno</b>, jantar e eventual revisão do vale-transporte.</li>
+              <li>A alteração de horário depende de validação com Jurídico/RH, do acordo coletivo (se aplicável) e de comunicação prévia à equipe.</li>
             </ul>
           </div>
         </div>
@@ -108,7 +108,7 @@
     const dif = pr.map((x, i) => ({ h: x.h, d: x.total - at[i].total })).filter((x) => x.d !== 0);
     document.getElementById("sim-cob-nota").textContent = dif.length
       ? "Diferenças: " + dif.map((x) => `${x.h}h ${x.d > 0 ? "+" : ""}${x.d}`).join(" · ")
-      : "Sem diferença de cobertura entre os cenários com os horários confirmados.";
+      : "Sem diferença de cobertura entre os cenários (horários confirmados).";
 
     const ligar = (id, chave, num) => {
       const el = document.getElementById(id);
@@ -146,19 +146,19 @@
       <div class="card">
         <div class="secao"><h3>Resultado estimado por mês</h3><span class="pill ${r.liquido >= 0 ? "ok" : "warn"}">${r.liquido >= 0 ? "Economia" : "Custo adicional"}</span></div>
         <div class="resultado ${cls} num">${U.brl(r.liquido)}</div>
-        <p class="sub" style="margin-top:2px">≈ ${U.brl0(r.anual)} em 12 meses (mantido o padrão de agosto). Base: HE do grupo hoje = ${U.brl(r.heAtual)} (${U.n1(r.heH)} h), o que representa <b>${U.pct(totH ? (r.heH / totH) * 100 : 0)}</b> das horas extras de toda a filial — este é o teto do que a mudança consegue alcançar.</p>
+        <p class="sub" style="margin-top:2px">≈ ${U.brl0(r.anual)} em 12 meses, mantido o padrão do mês. Base: HE atual do grupo = ${U.brl(r.heAtual)} (${U.n1(r.heH)} h), equivalente a <b>${U.pct(totH ? (r.heH / totH) * 100 : 0)}</b> das horas de HE da filial, que é o alcance máximo da mudança.</p>
         <div class="grid g-3" style="margin-top:6px">
-          <div><small class="rodape-nota">Economia com HE absorvidas</small><div><b class="num">${U.brl(r.eco)}</b></div><small class="rodape-nota">${U.n1(r.absH)} h viram jornada normal</small></div>
+          <div><small class="rodape-nota">Economia com HE absorvidas</small><div><b class="num">${U.brl(r.eco)}</b></div><small class="rodape-nota">${U.n1(r.absH)} h passam para a jornada normal</small></div>
           <div><small class="rodape-nota">Custo de HE noturnas (após 22h)</small><div><b class="num">${U.brl(r.noturno)}</b></div></div>
-          <div><small class="rodape-nota">Custos extras de operação</small><div><b class="num">${U.brl(r.extraDia)}</b></div></div>
+          <div><small class="rodape-nota">Custos adicionais de operação</small><div><b class="num">${U.brl(r.extraDia)}</b></div></div>
         </div>
-        <p class="rodape-nota" style="margin-top:10px">${eq === null ? "Com estas premissas de custo, não há percentual de absorção que empate o resultado." : eq === 0 ? "Resultado positivo mesmo sem nenhuma absorção." : `Ponto de equilíbrio: a mudança se paga se pelo menos <b>${eq}%</b> das HE do grupo forem absorvidas.`}</p>
+        <p class="rodape-nota" style="margin-top:10px">${eq === null ? "Com estas premissas, nenhum percentual de absorção equilibra o resultado." : eq === 0 ? "Resultado positivo mesmo com 0% de absorção." : `Ponto de equilíbrio: absorção mínima de <b>${eq}%</b> das HE do grupo.`}</p>
       </div>
       <div class="card">
-        <h3>Cenários de absorção</h3><p class="sub">Mesmas premissas de custo, variando só o percentual de HE absorvidas.</p>
+        <h3>Cenários de absorção</h3><p class="sub">Mesmas premissas de custo; varia apenas o percentual de HE absorvidas.</p>
         <div class="cen">${cen.map((c) => `<div class="${Math.round(p.abs) === c.x ? "ativo" : ""}"><small>${c.x}% absorvido</small><b class="num" style="color:${c.r.liquido >= 0 ? "var(--ok)" : "var(--alerta)"}">${U.brl0(c.r.liquido)}</b><small>/mês · ${U.brl0(c.r.anual)}/ano</small></div>`).join("")}</div>
       </div>
-      <div class="card"><h3>Efeito por colaborador do grupo</h3><p class="sub">Apenas quem está hoje em ${U.esc(Sim.cfg().horarios_que_migram.join(", "))}.</p>${tabela}</div>`;
+      <div class="card"><h3>Efeito por colaborador do grupo</h3><p class="sub">Colaboradores atualmente em ${U.esc(Sim.cfg().horarios_que_migram.join(", "))}.</p>${tabela}</div>`;
   };
 
   G.Sim = Sim;
