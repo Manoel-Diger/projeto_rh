@@ -45,9 +45,17 @@ exige o **Tesseract OCR instalado na máquina** (além do pacote Python `pytesse
 Sem o Tesseract instalado, esses PDFs continuam sendo ignorados (com aviso claro no terminal), do
 mesmo jeito que qualquer PDF de layout não reconhecido — nenhum outro mês é afetado.
 
-## Filtro de Ano e Mês
-O filtro **Ano** (ao lado do Mês) restringe o seletor de Mês e a opção "Todos os meses" ao ano
-escolhido; com "Todos os anos", o comportamento é o de sempre (histórico completo).
+## Filtros de Ano e Mês (seleção múltipla)
+Os dois filtros aceitam **mais de uma opção ao mesmo tempo**. Clique no campo e marque o que quiser; o painel só fecha ao clicar fora ou apertar `Esc`.
+- **Ano**: restringe os meses oferecidos no filtro de Mês. "Todos os anos" (padrão) mostra o histórico completo.
+- **Mês**: lista os meses agrupados por ano, com o mesmo mês alinhado entre os anos. Marque, por exemplo, **Jan/2025 + Jan/2026** para comparar.
+  A caixa ao lado de cada ano marca ou desmarca o ano inteiro; "Todos os meses" limpa a seleção.
+- **Um único mês** marcado: o painel mostra a visão detalhada de sempre (insights, comparação com o mês anterior, simulação e qualidade dos dados).
+- **Vários meses** (ou nenhum): visão consolidada. Cards, tabelas e rankings somam os meses selecionados; Simulação e Qualidade dos dados pedem um único mês.
+- **Gráficos "mês a mês"** (Visão executiva): quando a seleção tem mais de um ano, os mesmos meses ficam lado a lado e cada ano tem uma cor, sempre a partir da cor do indicador
+  (o ano mais recente usa a cor original; os anteriores usam tons mais claros). Com um só ano, o gráfico segue como antes.
+- A coluna **VAR.** da tabela "Comparativo mensal" compara os dois últimos meses cronológicos da tabela (passe o mouse no título para ver quais).
+- Os filtros de Área, Turno, Situação e Função voltam para "Todos" sozinhos quando o valor escolhido não existe no período selecionado.
 
 ## Regras e premissas (editáveis em `scripts/config.json`)
 - **HE** = eventos 34, 36 e 39 da folha; **DSR sobre HE** = evento 65. O custo de HE inclui o DSR.

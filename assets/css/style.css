@@ -1,15 +1,15 @@
 /* ===== RH e Eficiência Operacional – HE Belém ===== */
 :root{
-  --ink:#0b1118; --ink-2:#111b27; --ink-3:#1b2a3a;
-  --paper:#0b1118; --surface:#111a24; --line:#263545; --line-2:#1d2a38;
-  --text:#e7edf3; --muted:#91a0af; --faint:#647486;
-  --atual:#4a6f8f; --proposto:#0f8b8d; --he:#c9822b; --he-soft:#f6e6d0;
-  --alerta:#b3402f; --alerta-soft:#f6dcd7; --ok:#2e7d5b; --ok-soft:#d9eee4;
-  --colab:#8b7bff;
-  --medio:#a9781a; --medio-soft:#f5ead0;
-  --radius:10px; --radius-sm:6px;
+  --ink:#070d1c; --ink-2:#0e1830; --ink-3:#18274a;
+  --paper:#070d1c; --surface:#0d1730; --line:#22345c; --line-2:#182848;
+  --text:#eaf0fb; --muted:#94a5c4; --faint:#62759b;
+  --atual:#5b8def; --proposto:#2fc4b7; --he:#e59b3a; --he-soft:rgba(229,155,58,.16);
+  --alerta:#f0705f; --alerta-soft:rgba(240,112,95,.16); --ok:#3fbf8f; --ok-soft:rgba(63,191,143,.16);
+  --colab:#9b8cff;
+  --medio:#e0b04a; --medio-soft:rgba(224,176,74,.16);
+  --radius:12px; --radius-sm:7px;
   --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --shadow:0 8px 24px rgba(0,0,0,.18);
+  --shadow:0 14px 34px -16px rgba(0,0,0,.7);
 }
 
 *{box-sizing:border-box}
@@ -776,7 +776,7 @@ tr:hover td{
   }
 
   .card:hover{
-    border-color:#c2ccd6;
+    border-color:var(--faint);
   }
 }
 
@@ -1992,4 +1992,548 @@ td{
   .rk-nome small{
     font-size:9px;
   }
+}
+
+/* =========================================================
+   SELETORES DE ANO E MÊS (seleção múltipla)
+   ========================================================= */
+
+.msel{
+  position:relative;
+}
+
+.msel-btn{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:2px 6px;
+  height:24px;
+  font-size:11px;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+
+.msel-btn:hover,
+.msel.aberto .msel-btn{
+  border-color:var(--ink-3);
+}
+
+.msel-txt{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.msel-btn svg{
+  flex:none;
+  color:var(--muted);
+}
+
+.filtro:has(#f-ano) .msel{
+  width:114px;
+}
+
+.filtro:has(#f-mes) .msel{
+  width:118px;
+}
+
+.msel-pop{
+  position:absolute;
+  top:calc(100% + 4px);
+  left:0;
+  z-index:30;
+  min-width:100%;
+  max-height:min(70vh,460px);
+  overflow-y:auto;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+}
+
+.msel-pop[hidden]{
+  display:none;
+}
+
+.msel-pop.dir{
+  left:auto;
+  right:0;
+}
+
+#f-mes .msel-pop{
+  width:max-content;
+}
+
+.filtro .msel .mchk{
+  font-size:12px;
+  margin:0;
+  color:var(--text);
+}
+
+.filtro .msel .mchk.ano{
+  color:var(--muted);
+}
+
+.filtro .msel .mchk.mes{
+  font-size:11px;
+}
+
+.mchk{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  cursor:pointer;
+  color:var(--text);
+  white-space:nowrap;
+}
+
+/* neutraliza o estilo genérico ".filtro input" (campos de texto), que também alcança as caixas de seleção */
+.msel .mchk input[type="checkbox"]{
+  width:14px !important;
+  height:14px !important;
+  min-width:0 !important;
+  padding:0;
+  margin:0;
+  flex:none;
+  accent-color:var(--he);
+  cursor:pointer;
+}
+
+.mchk.todos{
+  padding-bottom:6px;
+  border-bottom:1px solid var(--line);
+  font-weight:600;
+}
+
+.mchk.ano{
+  font-weight:600;
+  color:var(--muted);
+}
+
+.mgrupo{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.mgrade{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(38px,1fr));
+  gap:4px;
+}
+
+/* cada mês vira um botão marcável; a caixa fica invisível mas continua acessível pelo teclado */
+.mchk.mes{
+  justify-content:center;
+  padding:4px 0;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  font-size:11px;
+}
+
+.msel .mchk.mes input[type="checkbox"]{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  width:100% !important;
+  height:100% !important;
+}
+
+.mchk.mes:has(input:checked){
+  background:var(--he);
+  border-color:var(--he);
+  color:#fff;
+  font-weight:600;
+}
+
+.mchk.mes:has(input:focus-visible),
+.msel-btn:focus-visible{
+  outline:2px solid var(--he);
+  outline-offset:1px;
+}
+
+.mchk.mes.vazio{
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+.mchk.mes.vazio input{
+  cursor:not-allowed;
+}
+
+@media print{
+  .msel-pop{
+    display:none !important;
+  }
+}
+
+/* os seletores de Ano/Mês não encolhem com a barra apertada (o título é que cede espaço) */
+.filtro:has(.msel){
+  flex:0 0 auto;
+}
+
+/* celular: os seletores ocupam a coluna inteira, como os demais campos do cabeçalho */
+@media (max-width:600px){
+  .filtro:has(#f-ano) .msel,
+  .filtro:has(#f-mes) .msel{
+    width:100%;
+  }
+
+  .msel-btn{
+    height:31px;
+    padding:4px 7px;
+    font-size:11.5px;
+  }
+
+  .msel-pop{
+    max-width:calc(100vw - 20px);
+  }
+
+  #f-mes .msel-pop{
+    width:min(300px,calc(100vw - 20px));
+  }
+
+  .mgrade{
+    grid-template-columns:repeat(4,minmax(38px,1fr));
+  }
+}
+
+
+/* =========================================================
+   ACABAMENTO
+   ========================================================= */
+
+/* valor do card + etiqueta de variação: quebra de linha em vez de cortar na borda do card */
+.kpi .val{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  column-gap:.3em;
+  row-gap:2px;
+}
+
+.kpi .val .delta{
+  margin-left:0;
+  white-space:nowrap;
+}
+
+.kpi .det .delta{
+  white-space:nowrap;
+}
+
+/* tabela comparativa mensal: a coluna "Indicador" fica fixa ao rolar para os meses seguintes */
+.tabela-mensal th:first-child,
+.tabela-mensal td:first-child{
+  position:sticky;
+  left:0;
+  z-index:2;
+  background:var(--surface);
+  box-shadow:1px 0 0 var(--line-2);
+}
+
+.tabela-mensal th:first-child{
+  z-index:3;
+  background:#17222e;
+}
+
+.tabela-mensal tr.linha-dest td:first-child{
+  background:var(--surface);
+}
+
+
+/* =========================================================
+   EVOLUÇÃO VISUAL — azul-marinho profundo, cards em gradiente,
+   cor por tipo de indicador. Somente aparência: tamanhos,
+   posições e comportamento permanecem os dos blocos acima.
+   ========================================================= */
+
+*{
+  scrollbar-width:thin;
+  scrollbar-color:#2a3f70 transparent;
+}
+
+/* ---------- cor semântica de textos e etiquetas ---------- */
+
+.pill.he{ color:#f3c27d; }
+.pill.warn{ color:#ff9a8b; }
+.pill.ok{ color:#6fdcae; }
+.delta.up{ color:#ff9a8b; }
+.delta.down{ color:#6fdcae; }
+.insight.alto .tag{ color:#ff9a8b; }
+.insight.medio .tag{ color:#f0c46f; }
+.insight.info .tag{ background:rgba(91,141,239,.16); color:#9db8ff; }
+.tag{ background:rgba(148,170,220,.12); }
+.insight p{ color:#c9d4ea; }
+th.sorted::after{ color:#8fb0ff; }
+
+.aviso{
+  background:linear-gradient(135deg,rgba(120,88,24,.42),rgba(13,23,48,.92));
+  border-color:rgba(224,176,74,.36);
+  color:#ecd9a4;
+}
+
+.aviso.info{
+  background:rgba(91,141,239,.10);
+  border-color:rgba(91,141,239,.32);
+  color:#b9d0f5;
+}
+
+.barra{ background:linear-gradient(90deg,var(--he),#f3c27d); }
+
+/* ---------- tabelas ---------- */
+
+th{ background:#111d3b; color:#9fb0d0; }
+.tabela-mensal th:first-child{ background:#111d3b; }
+tr:hover td{ background:rgba(91,141,239,.08); }
+.tabela-mensal tr.linha-dest td{ background:rgba(91,141,239,.10); }
+.tabela-mensal tr.linha-dest td:first-child{ background:#0f1a38; }
+
+.rk-barra div{
+  background:rgba(148,170,220,.10);
+  border-radius:99px;
+}
+
+.rk-barra i{
+  border-radius:99px;
+  background-image:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.28))!important;
+}
+
+/* ---------- controles ---------- */
+
+.filtro label{ color:#7f93b8; }
+
+.filtro select,
+.filtro input,
+.btn,
+.msel-btn{
+  background:linear-gradient(180deg,#121f40,#0d1730);
+  border-color:#243a68;
+}
+
+.filtro select:hover,
+.filtro input:hover,
+.btn:hover,
+.msel-btn:hover,
+.msel.aberto .msel-btn{
+  border-color:#3a5a9c;
+}
+
+.filtro select:focus,
+.filtro input:focus{
+  outline:none;
+  border-color:#5b8def;
+  box-shadow:0 0 0 3px rgba(91,141,239,.22);
+}
+
+.btn.prim{
+  background:linear-gradient(135deg,#5b7cfa,#7b6cf6);
+  border-color:transparent;
+  box-shadow:0 6px 16px -6px rgba(91,124,250,.7);
+}
+
+.msel-pop{
+  background:linear-gradient(180deg,#121f40,#0d1730);
+  border-color:#2c4677;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.75);
+}
+
+.chip{
+  background:rgba(91,141,239,.10);
+  border-color:rgba(91,141,239,.28);
+  color:#b9d0f5;
+}
+
+/* ---------- indicadores: um tom por tipo ---------- */
+
+.kpi{
+  --tone:91,141,239;
+  --tone-l:#9db8ff;
+  position:relative;
+  overflow:hidden;
+}
+
+.kpi.t-he{ --tone:229,155,58; --tone-l:#f3c27d; }
+.kpi.t-he100{ --tone:240,112,95; --tone-l:#ff9a8b; }
+.kpi.t-bh{ --tone:91,170,239; --tone-l:#8ec5ff; }
+.kpi.t-dsr{ --tone:47,196,183; --tone-l:#6fe0d0; }
+.kpi.t-colab{ --tone:155,140,255; --tone-l:#b7aaff; }
+.kpi.t-custo{ --tone:91,141,239; --tone-l:#9db8ff; }
+
+.kpi .rot{
+  color:var(--tone-l);
+  font-weight:500;
+}
+
+.kpi .val{
+  color:#fff;
+  font-weight:500;
+}
+
+.kpi .det{ color:#9aabc9; }
+
+.kpi.dest{
+  background:linear-gradient(150deg,rgba(84,56,16,.78) 0%,rgba(16,26,52,.96) 64%);
+  border-color:rgba(229,155,58,.55);
+  box-shadow:
+    0 0 0 1px rgba(229,155,58,.16),
+    0 14px 30px -14px rgba(229,155,58,.38);
+}
+
+.kpi.dest .rot{ color:#f3c27d; }
+.kpi.dest .det{ color:#c3cee4; }
+
+@media screen{
+
+  /* fundo com profundidade */
+  body{
+    background:
+      radial-gradient(900px 520px at 88% -8%,rgba(70,105,220,.17),transparent 62%),
+      radial-gradient(760px 480px at -6% 44%,rgba(47,196,183,.07),transparent 60%),
+      linear-gradient(180deg,#081022 0%,#060b18 100%);
+    background-attachment:fixed;
+  }
+
+  .side{
+    background:linear-gradient(180deg,#0b1430 0%,#070d1e 100%);
+    border-right:1px solid rgba(120,150,220,.13);
+  }
+
+  .brand b::before{
+    content:"";
+    display:inline-block;
+    width:13px;
+    height:13px;
+    margin-right:7px;
+    border-radius:4px;
+    vertical-align:-1px;
+    background:linear-gradient(135deg,#5b8def,#2fc4b7);
+  }
+
+  .nav button:hover{
+    background:rgba(91,141,239,.09);
+  }
+
+  .nav button[aria-current="page"]{
+    background:linear-gradient(90deg,rgba(91,141,239,.24),rgba(91,141,239,.04));
+    box-shadow:inset 3px 0 0 #6d95f5;
+  }
+
+  .nav button[aria-current="page"] svg{
+    opacity:1;
+    color:#8fb0ff;
+  }
+
+  .top{
+    background:rgba(7,13,28,.78);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(120,150,220,.15);
+  }
+
+  .top .titulo h1{ color:#f3f7ff; }
+
+  /* cards em gradiente sutil */
+  .card,
+  .insight,
+  .tabela-wrap{
+    background:linear-gradient(155deg,rgba(26,41,80,.78) 0%,rgba(13,23,48,.92) 55%,rgba(10,18,38,.96) 100%);
+    border-color:rgba(120,150,220,.17);
+    box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.045);
+  }
+
+  .insight{
+    border-left-width:3px;
+  }
+
+  .card.flat{
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+  }
+
+  .card h3{ color:#f3f7ff; }
+
+  /* brilho discreto no canto e filete de cor no topo do indicador */
+  .kpi::after{
+    content:"";
+    position:absolute;
+    top:-38px;
+    right:-38px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(var(--tone),.26),transparent 68%);
+    pointer-events:none;
+  }
+
+  .kpi::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:2px;
+    background:linear-gradient(90deg,rgba(var(--tone),.9),transparent 72%);
+    pointer-events:none;
+  }
+
+  .kpi.dest{
+    box-shadow:
+      0 0 0 1px rgba(229,155,58,.16),
+      0 14px 30px -14px rgba(229,155,58,.38),
+      inset 0 1px 0 rgba(255,255,255,.05);
+  }
+}
+
+/* campos numéricos e de texto fora da barra de filtros (ex.: premissas da simulação) */
+input[type="number"],
+input[type="text"]{
+  background:linear-gradient(180deg,#121f40,#0d1730);
+  border:1px solid #243a68;
+  color:var(--text);
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus{
+  outline:none;
+  border-color:#5b8def;
+  box-shadow:0 0 0 3px rgba(91,141,239,.22);
+}
+
+/* ---------- listas suspensas (Área, Turno, Situação, Função etc.) ----------
+   As opções abertas são desenhadas pelo navegador e não herdam o fundo do campo:
+   fundo e texto são definidos aqui para acompanhar o tema do projeto. */
+
+select,
+input,
+.msel-pop{
+  color-scheme:dark;
+}
+
+select option,
+select optgroup{
+  background-color:#0d1730;
+  color:#ffffff;
+}
+
+select option:checked,
+select option:hover,
+select option:focus{
+  background-color:#2a4a8f;
+  background-image:linear-gradient(#2a4a8f,#2a4a8f);
+  color:#ffffff;
+}
+
+select option:disabled{
+  color:#7f93b8;
 }
