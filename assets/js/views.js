@@ -17,6 +17,10 @@
   };
   const kpi = (rot, val, det, cls = "") => `<div class="card kpi ${cls} ${tomKpi(rot)}"><div class="rot">${rot}</div><div class="val num">${val}</div><div class="det">${det || ""}</div></div>`;
   const insight = (i) => `<div class="insight ${i.nivel}"><span class="tag">${U.esc(i.tema)}</span><h4>${U.esc(i.titulo)}</h4><p>${U.esc(i.texto)}</p></div>`;
+  // Insights exibidos: somente os de valor gerencial (concentração de custo/área/horário, acima de 44 h
+  // e qualidade dos dados). Os demais continuam nos dados, apenas não são exibidos no painel.
+  const TEMAS_GERENCIAIS = ["Concentração", "Conformidade", "Jornadas", "Áreas", "Dados"];
+  const insightsGerenciais = (lista) => (lista || []).filter((i) => TEMAS_GERENCIAIS.includes(i.tema));
   const semDados = () => `<div class="card vazio">Nenhum colaborador corresponde aos filtros selecionados.</div>`;
 
   // Ranking em formato de tabela: posição, colaborador (com função/área), barra proporcional e valor.
@@ -197,11 +201,11 @@
     const d = (a, b) => (ka ? U.delta(a, b) : "");
     const mDados = U.mesDados();
 
-    const rawInsights = mDados && mDados.insights ? mDados.insights : [];
+    const rawInsights = insightsGerenciais(mDados && mDados.insights);
     const ins = rawInsights
       .filter((i) => i.nivel !== "info")
       .concat(rawInsights.filter((i) => i.nivel === "info"))
-      .slice(0, 4);
+      .slice(0, 5);
 
     const mensalOriginal = U.comparativoMensal();
     const mensal = ordenaMensalComparativo(mensalOriginal);
@@ -960,7 +964,7 @@
   V.problemas = (view) => {
     const m = U.mesDados(), L = U.dadosFiltrados();
     const acima = L.filter((x) => x.acima_limite);
-    const rawInsights = m && m.insights ? m.insights : [];
+    const rawInsights = insightsGerenciais(m && m.insights);
 
     view.innerHTML = `
       <div>
