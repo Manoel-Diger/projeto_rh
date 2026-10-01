@@ -1,14 +1,14 @@
 # RH e Eficiência Operacional – HE Belém
 
-Painel executivo de horas extras (HE), custos, jornadas e simulação do turno 13h–22h da Filial BEL.
-HTML + CSS + JavaScript no navegador; Python só para ler a folha e a Base Mestra.
+Painel de horas extras (HE), custos, jornadas e simulação do turno 13h–22h da Filial BEL.
+HTML + CSS + JavaScript no navegador; Python só para ler a folha e o cadastro.
 
 ## Como abrir
 Dê dois cliques em `index.html`. Não precisa de internet nem de servidor (o Chart.js já está em `assets/vendor/`).
 
 ## Atualização mensal (3 passos)
 1. Salve o PDF da folha do mês em `data/entrada/folha/` (o mês é lido de dentro do PDF; o nome do arquivo não importa).
-2. Se houver horários novos/admissões, atualize a planilha em `data/entrada/base_mestra/` (aba **Base Mestra**, colunas: Colaborador, Função, Horário, Salário).
+2. Se houver horários novos/admissões, atualize a planilha em `data/entrada/cadastro/` (aba **Cadastro**, colunas: Colaborador, Função, Horário, Salário).
 3. Execute `atualizar.bat` (Windows) ou `./atualizar.sh` (Mac/Linux). Requer Python 3.9+.
    Ou manualmente: `pip install -r requirements.txt` e `python scripts/atualizar_dados.py`.
 
@@ -24,12 +24,12 @@ rh-eficiencia-he-bel/
 ├── scripts/
 │   ├── atualizar_dados.py     orquestra a atualização
 │   ├── parser_folha.py        lê o PDF da folha (por coordenadas)
-│   ├── base_mestra.py         lê a Base Mestra e interpreta horários
+│   ├── cadastro.py             lê o cadastro e interpreta horários
 │   ├── analises.py            cruzamento, indicadores, conferência e insights
 │   └── config.json            regras (códigos de eventos, limites, premissas da simulação)
 ├── data/
 │   ├── entrada/folha/         PDFs da folha
-│   ├── entrada/base_mestra/   planilha Base Mestra
+│   ├── entrada/cadastro/      planilha de cadastro
 │   └── processado/            JSON por mês + dados.js (lido pelo painel)
 └── assets/ css/ js/ vendor/
 ```
@@ -52,7 +52,7 @@ Os dois filtros aceitam **mais de uma opção ao mesmo tempo**. Clique no campo 
   A caixa ao lado de cada ano marca ou desmarca o ano inteiro; "Todos os meses" limpa a seleção.
 - **Um único mês** marcado: o painel mostra a visão detalhada de sempre (insights, comparação com o mês anterior, simulação e qualidade dos dados).
 - **Vários meses** (ou nenhum): visão consolidada. Cards, tabelas e rankings somam os meses selecionados; Simulação e Qualidade dos dados pedem um único mês.
-- **Gráficos "mês a mês"** (Visão executiva): quando a seleção tem mais de um ano, os mesmos meses ficam lado a lado e cada ano tem uma cor, sempre a partir da cor do indicador
+- **Gráficos "mês a mês"** (Visão geral): quando a seleção tem mais de um ano, os mesmos meses ficam lado a lado e cada ano tem uma cor, sempre a partir da cor do indicador
   (o ano mais recente usa a cor original; os anteriores usam tons mais claros). Com um só ano, o gráfico segue como antes.
 - A coluna **VAR.** da tabela "Comparativo mensal" compara os dois últimos meses cronológicos da tabela (passe o mouse no título para ver quais).
 - Os filtros de Área, Turno, Situação e Função voltam para "Todos" sozinhos quando o valor escolhido não existe no período selecionado.

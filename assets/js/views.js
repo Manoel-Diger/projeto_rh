@@ -185,8 +185,8 @@
     </div>`;
   };
 
-  // ===================== VISÃO EXECUTIVA =====================
-  V.exec = (view) => {
+  // ===================== VISÃO GERAL =====================
+  V.geral = (view) => {
     const todos = U.state.mes === "TODOS";
     const L = U.dadosFiltrados();
 
@@ -230,7 +230,7 @@
         ${kpi("HE 100%", U.brl(k.he100_v) + d(k.he100_v, ka && ka.he100_v), `${U.n1(k.he100_h)} h${d(k.he100_h, ka && ka.he100_h)}`)}
         ${kpi("HE 50% c/ BH", U.brl(k.heBH_v) + d(k.heBH_v, ka && ka.heBH_v), `${U.n1(k.heBH_h)} h${d(k.heBH_h, ka && ka.heBH_h)}`)}
         ${kpi("DSR sobre HE", U.brl(k.dsr) + d(k.dsr, ka && ka.dsr), `DSR equivale a ${U.n1(k.heV ? (k.dsr / k.heV) * 100 : 0)}% da HE`)}
-        ${kpi(`HE + DSR <span class="pill he">TOTAL</span>`, U.brl(k.he) + d(k.he, ka && ka.he), `${U.n0(k.heH)} h de HE${todos ? " no período" : " no mês"} · encargos estimados de ${U.brl(k.encargos)} não incluídos`, "dest")}
+        ${kpi(`HE + DSR <span class="pill he">TOTAL</span>`, U.brl(k.he) + d(k.he, ka && ka.he), `${U.n0(k.heH)} h de HE${todos ? " no período" : " no mês"} · encargos estimados de ${U.brl(k.encargos)} não incluídos`)}
         ${kpi("Colaboradores com HE", `${k.nComHE} <span style="font-size:15px;color:var(--muted)">${todos ? "únicos" : `de ${k.n}`}</span>` + (!todos ? d(k.nComHE, ka && ka.nComHE) : ""), todos ? `Colaboradores únicos no período · média de ${U.n1(mediaPeriodo)} h de HE por colaborador` : `${U.pct(k.n ? (k.nComHE / k.n) * 100 : 0)} do quadro · média de ${U.n1(k.mediaHE)} h de HE por colaborador`)}
       </div>
 
@@ -274,7 +274,7 @@
       <div class="grid g-21">
         <div class="card">
           <h3>Presença ao longo do dia</h3>
-          <p class="sub">Colaboradores presentes por hora, por tipo de jornada. Considera apenas horários confirmados na Base Mestra.</p>
+          <p class="sub">Colaboradores presentes por hora, por tipo de jornada. Considera apenas horários confirmados no cadastro.</p>
           <div class="chart"><canvas id="c-dia"></canvas></div>
         </div>
 
@@ -639,7 +639,7 @@
         ${kpi("HE Total (sem DSR)", U.brl(k.heV), `${U.n0(k.heH)} h · mesmo valor da linha "HE Total" do comparativo mensal`)}
         ${kpi("DSR sobre HE", U.brl(k.dsr), `DSR equivale a ${U.n1(k.heV ? (k.dsr / k.heV) * 100 : 0)}% da HE`)}
         ${kpi("Encargos estimados", U.brl(k.encargos), `${G.DADOS.config.regras.encargos_sobre_he_pct}% sobre HE + DSR`)}
-        ${kpi(`Custo total de HE <span class="pill he">TOTAL</span>`, U.brl(k.he + k.encargos), "HE + DSR + encargos estimados. O card \"HE + DSR\" da Visão executiva não inclui encargos.", "dest")}
+        ${kpi(`Custo total de HE <span class="pill he">TOTAL</span>`, U.brl(k.he + k.encargos), "HE + DSR + encargos estimados. O card \"HE + DSR\" da Visão geral não inclui encargos.", "dest")}
         ${kpi("Adicional noturno", U.brl0(noturno), "Adicional noturno, hora reduzida e DSR noturno")}
         ${kpi("HE / remuneração bruta", U.pct(k.pctRem), `Base: remuneração bruta de ${U.brl0(k.rem)}, sem rescisões e 13º adiantado`)}
       </div>
@@ -763,7 +763,7 @@
       <div class="grid g-2">
         <div class="card">
           <h3>Colaboradores por horário</h3>
-          <p class="sub">Somente horários confirmados na Base Mestra.</p>
+          <p class="sub">Somente horários confirmados no cadastro.</p>
           <div class="chart"><canvas id="c-hor"></canvas></div>
         </div>
 
@@ -1110,8 +1110,8 @@
             </li>
 
             <li>
-              Base Mestra:
-              <b>${U.esc(m.fonte.base_mestra)}</b>
+              Cadastro:
+              <b>${U.esc(m.fonte.cadastro)}</b>
               (aba ${U.esc(m.fonte.aba)})
             </li>
 
@@ -1123,7 +1123,7 @@
             <li>
               Colaboradores na folha:
               <b>${q.colaboradores_folha}</b>
-              · na Base Mestra:
+              · no cadastro:
               <b>${q.colaboradores_base}</b>
             </li>
 
@@ -1142,24 +1142,24 @@
 
         <div class="card">
           <h3>Horários pendentes (${q.horarios_pendentes.length})</h3>
-          <p class="sub">Horários não cadastrados na Base Mestra. Confirmar no cartão-ponto.</p>
+          <p class="sub">Horários que não constam no cadastro. Confirmar no cartão-ponto.</p>
           ${lista(q.horarios_pendentes.map(U.titulo))}
         </div>
 
         <div class="card">
-          <h3>Cruzamento folha x Base Mestra</h3>
+          <h3>Cruzamento folha x cadastro</h3>
 
-          <p class="sub">Na folha e fora da Base Mestra:</p>
+          <p class="sub">Na folha e fora do cadastro:</p>
           ${lista(q.sem_base)}
 
-          <p class="sub">Na Base Mestra e fora da folha:</p>
+          <p class="sub">No cadastro e fora da folha:</p>
           ${lista(q.sem_folha)}
 
-          <p class="sub">Salário divergente entre folha e Base Mestra:</p>
+          <p class="sub">Salário divergente entre folha e cadastro:</p>
           ${lista(
             q.salario_divergente.map(
               (x) =>
-                `${x.nome}: folha ${U.brl(x.folha)} x Base Mestra ${U.brl(x.base)}`
+                `${x.nome}: folha ${U.brl(x.folha)} x cadastro ${U.brl(x.base)}`
             )
           )}
         </div>
@@ -1169,7 +1169,7 @@
       <div class="card">
         <h3>Matrícula x "F. Reg." da folha (${q.matricula_x_freg.length})</h3>
         <p class="sub">
-          O cruzamento com a Base Mestra é feito pelo nome. Os registros abaixo têm F. Reg.
+          O cruzamento com o cadastro é feito pelo nome. Os registros abaixo têm F. Reg.
           diferente da matrícula; informação para conferência.
         </p>
         ${lista(

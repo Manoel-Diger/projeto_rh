@@ -1,12 +1,12 @@
 """
 analises.py
-Cruza folha (PDF) x Base Mestra (Excel), calcula os indicadores por colaborador,
+Cruza folha (PDF) x cadastro (Excel), calcula os indicadores por colaborador,
 confere os totais com o resumo oficial da folha e gera os insights automáticos.
 """
 from collections import defaultdict
 from datetime import datetime
 
-from base_mestra import normaliza_nome
+from cadastro import normaliza_nome
 from parser_folha import soma_por_codigo
 
 
@@ -183,7 +183,7 @@ def gera_insights(lista, cfg, qual):
     if pend:
         ins.append({"nivel": "medio", "tema": "Dados", "titulo": f"{len(pend)} colaboradores sem horário confirmado",
                     "texto": f"Correspondem a {len(pend) / len(ativos) * 100:.0f}% do quadro ativo e ficam fora das análises de turno e da simulação "
-                             "até o horário ser confirmado no cartão-ponto e cadastrado na Base Mestra."})
+                             "até o horário ser confirmado no cartão-ponto e registrado no cadastro."})
 
     ausencia_v = sum(c["atrasos_v"] + c["faltas_v"] for c in lista)
     atrasos_h = sum(c["atrasos_h"] for c in lista)
@@ -244,7 +244,7 @@ def monta_mes(folha, base, cfg, arquivo_pdf, arquivo_base):
     return {
         "mes": mes, "periodo": folha["periodo"],
         "gerado_em": datetime.now().strftime("%d/%m/%Y %H:%M"),
-        "fonte": {"folha": arquivo_pdf, "base_mestra": arquivo_base, "aba": base["aba"]},
+        "fonte": {"folha": arquivo_pdf, "cadastro": arquivo_base, "aba": base["aba"]},
         "colaboradores": lista, "qualidade": qual,
         "insights": gera_insights(lista, cfg, qual),
     }

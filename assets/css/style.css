@@ -1,6 +1,6 @@
 /* =====================================================================
    RH e Eficiência Operacional – HE Belém
-   Folha de estilos única (modo escuro) – visual executivo
+   Folha de estilos única (modo escuro) – visual limpo
 
    Paleta semântica (usada em todo o painel, inclusive nos gráficos,
    que leem estas variáveis via JavaScript):
@@ -47,6 +47,7 @@
   --alerta-soft:rgba(239,91,91,.13);
   --ok-soft:rgba(52,195,143,.13);
   --medio-soft:rgba(232,185,49,.13);
+  --rk-azul:#4d6b8f;        /* barras dos rankings */
   --neutro-soft:rgba(135,151,178,.14);
 
   --radius:10px;
@@ -733,18 +734,6 @@ select option:disabled{
   gap:2px;
 }
 
-/* filete superior de cor, sem gradiente */
-.kpi::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:2px;
-  background:rgb(var(--tone));
-  pointer-events:none;
-}
-
 /* tom por tipo de indicador (classe definida pelo JS) */
 .kpi.t-he{ --tone:240,147,43; }      /* horas extras */
 .kpi.t-dsr{ --tone:52,195,143; }     /* DSR */
@@ -814,17 +803,11 @@ select option:disabled{
 /* total: o indicador mais importante do bloco */
 .kpi.dest{
   background:var(--surface);
-  border-color:rgba(240,147,43,.55);
-  --tone:240,147,43;
   order:-1;
 }
 
-.kpi.dest::before{
-  height:3px;
-}
-
 .kpi.dest .rot{
-  color:#f5b467;
+  color:#d3dbe8;
 }
 
 .kpi.dest .val{
@@ -892,7 +875,6 @@ select option:disabled{
 .insight{
   background:var(--surface);
   border:1px solid var(--line);
-  border-left:3px solid var(--faint);
   border-radius:var(--radius);
   padding:9px 12px;
   order:0;
@@ -915,20 +897,14 @@ select option:disabled{
 
 .insight.medio{
   order:-1;
-  border-left-color:var(--medio);
-}
-
-.insight.info{
-  border-left-color:var(--atual);
 }
 
 /* crítico: destaque máximo, sempre antes dos demais */
 .insight.alto{
   order:-2;
   padding:12px 14px;
-  border:1px solid rgba(239,91,91,.55);
-  border-left:4px solid var(--alerta);
-  background:linear-gradient(0deg,rgba(239,91,91,.08),rgba(239,91,91,.08)),var(--surface);
+  border:1px solid var(--line);
+  background:var(--surface);
 }
 
 .insight.alto h4{
@@ -1145,8 +1121,8 @@ tr:hover td{
 }
 
 .kpi.dest .pill.he{
-  background:var(--he);
-  color:#1b1206;
+  background:rgba(135,151,178,.22);
+  color:#d3dbe8;
   font-weight:700;
 }
 
@@ -1241,10 +1217,9 @@ table.rk tr:nth-child(-n+3) .rk-val{
   border-radius:99px;
 }
 
-/* cor por tema (a cor inline do JS é azul; aqui segue a paleta semântica):
-   HE = laranja · atrasos = amarelo (atenção) · faltas = vermelho (problema) */
+/* HE = laranja · atrasos = azul padrão · faltas = vermelho */
 .g-2 > .card:nth-child(-n+4) .rk-barra i{ background:var(--he) !important; }
-.g-2 > .card:nth-child(5) .rk-barra i{ background:var(--medio) !important; }
+.g-2 > .card:nth-child(5) .rk-barra i{ background:var(--rk-azul) !important; }
 .g-2 > .card:nth-child(6) .rk-barra i{ background:var(--alerta) !important; }
 
 .rk-val{
@@ -1370,8 +1345,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
 
 /* 1. impacto: resultado líquido em destaque */
 #sim-res > .card:nth-child(1){
-  border-color:rgba(52,195,143,.45);
-  border-top-width:3px;
   padding:16px 18px;
 }
 
@@ -1395,10 +1368,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
   color:var(--alerta);
 }
 
-#sim-res > .card:nth-child(1):has(.resultado.neg){
-  border-color:rgba(239,91,91,.5);
-}
-
 /* decomposição do resultado: economia (verde) · noturno (amarelo) · operação (cinza) */
 #sim-res > .card:nth-child(1) .g-3{
   gap:10px;
@@ -1408,13 +1377,9 @@ table.rk tr:nth-child(-n+3) .rk-val{
 #sim-res > .card:nth-child(1) .g-3 > div{
   background:var(--surface-2);
   border:1px solid var(--line);
-  border-top:2px solid var(--faint);
   border-radius:var(--radius-sm);
   padding:9px 12px;
 }
-
-#sim-res > .card:nth-child(1) .g-3 > div:nth-child(1){ border-top-color:var(--ok); }
-#sim-res > .card:nth-child(1) .g-3 > div:nth-child(2){ border-top-color:var(--medio); }
 
 #sim-res > .card:nth-child(1) .g-3 b{
   font-size:16px;
@@ -1436,9 +1401,7 @@ table.rk tr:nth-child(-n+3) .rk-val{
 }
 
 .cen div.ativo{
-  border-color:var(--ok);
   background:var(--ok-soft);
-  box-shadow:inset 0 0 0 1px var(--ok);
 }
 
 .cen small{

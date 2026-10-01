@@ -1,7 +1,7 @@
 /* app.js – inicialização, filtros e navegação */
 (function () {
   const TITULOS = {
-    exec: ["Visão executiva", "Custo e volume de horas extras e DSR"],
+    geral: ["Visão geral", "Custo e volume de horas extras e DSR"],
     he: ["Horas extras", "Composição do custo, distribuição e detalhamento por colaborador"],
     custos: ["Custos", "HE, DSR e encargos em relação à remuneração"],
     jornadas: ["Jornadas e turnos", "Quadro por horário e presença ao longo do dia"],

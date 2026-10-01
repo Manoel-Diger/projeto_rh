@@ -8,8 +8,8 @@
  "gerado_em": "28/09/2026 15:02",
  "fonte": {
   "folha": "3° 112025.pdf",
-  "base_mestra": "Base_Mestra_RH_Belem.xlsx",
-  "aba": "Base Mestra"
+  "cadastro": "Cadastro_RH_Belem.xlsx",
+  "aba": "Cadastro"
  },
  "colaboradores": [
   {
@@ -3838,7 +3838,7 @@
    "nivel": "medio",
    "tema": "Dados",
    "titulo": "22 colaboradores sem horário confirmado",
-   "texto": "Correspondem a 31% do quadro ativo e ficam fora das análises de turno e da simulação até o horário ser confirmado no cartão-ponto e cadastrado na Base Mestra."
+   "texto": "Correspondem a 31% do quadro ativo e ficam fora das análises de turno e da simulação até o horário ser confirmado no cartão-ponto e registrado no cadastro."
   },
   {
    "nivel": "info",

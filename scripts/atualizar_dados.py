@@ -6,13 +6,13 @@ Uso mais simples (recomendado):
     1. Coloque o PDF da folha do mês em  data/entrada/folha/
        (qualquer nome; o mês é lido de dentro do PDF)
     2. Se algo mudou (novos horários, admissões), atualize a planilha em
-       data/entrada/base_mestra/
+       data/entrada/cadastro/
     3. Execute:   python scripts/atualizar_dados.py
     4. Abra index.html
 
 Opções:
     --folha ARQ.pdf [ARQ2.pdf ...]   processa apenas estes PDFs
-    --base  ARQ.xlsx                 usa esta Base Mestra
+    --base  ARQ.xlsx                 usa este cadastro
     --so-mes AAAA-MM                 reprocessa apenas um mês
 
 O script guarda um JSON por mês em data/processado/ e regenera
@@ -30,7 +30,7 @@ RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
 
 from parser_folha import ler_folha          # noqa: E402
-from base_mestra import ler_base_mestra     # noqa: E402
+from cadastro import ler_cadastro     # noqa: E402
 from analises import monta_mes              # noqa: E402
 
 try:
@@ -59,7 +59,7 @@ def mais_recente(padrao_lista):
 def main():
     ap = argparse.ArgumentParser(description="Atualiza os dados do dashboard RH – HE Belém")
     ap.add_argument("--folha", nargs="*", help="PDF(s) da folha")
-    ap.add_argument("--base", help="Planilha Base Mestra (.xlsx)")
+    ap.add_argument("--base", help="Planilha de cadastro (.xlsx)")
     ap.add_argument("--so-mes", help="Reprocessa apenas o mês AAAA-MM")
     args = ap.parse_args()
 
@@ -70,13 +70,13 @@ def main():
     if not pdfs:
         sys.exit(f"ERRO: nenhum PDF de folha encontrado em {arq['pasta_folhas']}/")
 
-    base_arq = args.base or mais_recente([caminho(os.path.join(arq["pasta_base_mestra"], "*.xlsx")),
-                                          caminho(os.path.join(arq["pasta_base_mestra"], "*.xlsm"))])
+    base_arq = args.base or mais_recente([caminho(os.path.join(arq["pasta_cadastro"], "*.xlsx")),
+                                          caminho(os.path.join(arq["pasta_cadastro"], "*.xlsm"))])
     if not base_arq:
-        sys.exit(f"ERRO: nenhuma Base Mestra (.xlsx) encontrada em {arq['pasta_base_mestra']}/")
+        sys.exit(f"ERRO: nenhum cadastro (.xlsx) encontrada em {arq['pasta_cadastro']}/")
 
-    print(f"Base Mestra : {os.path.relpath(base_arq, RAIZ)}")
-    base = ler_base_mestra(base_arq, arq["abas_base_mestra_aceitas"], cfg["regras"]["intervalo_minutos"])
+    print(f"Cadastro    : {os.path.relpath(base_arq, RAIZ)}")
+    base = ler_cadastro(base_arq, arq["abas_cadastro_aceitas"], cfg["regras"]["intervalo_minutos"])
     pend = sum(1 for r in base["registros"] if not r["horario"]["definido"])
     print(f"  aba '{base['aba']}': {len(base['registros'])} colaboradores, {pend} com horário pendente")
 
@@ -110,9 +110,9 @@ def main():
         print(f"  mês {mes}: {len(dados['colaboradores'])} colaboradores | HE + DSR = R$ {he:,.2f}")
         print(f"  conferência com o resumo da folha: {'OK' if q['reconciliacao_ok'] else 'DIVERGENTE'}")
         if q["sem_base"]:
-            print(f"  ! {len(q['sem_base'])} da folha não encontrados na Base Mestra: {q['sem_base'][:5]}")
+            print(f"  ! {len(q['sem_base'])} da folha não encontrados no cadastro: {q['sem_base'][:5]}")
         if q["sem_folha"]:
-            print(f"  ! {len(q['sem_folha'])} da Base Mestra não estão na folha: {q['sem_folha'][:5]}")
+            print(f"  ! {len(q['sem_folha'])} do cadastro não estão na folha: {q['sem_folha'][:5]}")
         with open(os.path.join(saida, f"{mes}.json"), "w", encoding="utf-8") as f:
             json.dump(dados, f, ensure_ascii=False, indent=1)
 

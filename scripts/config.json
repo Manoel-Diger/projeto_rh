@@ -59,8 +59,8 @@
 
   "arquivos": {
     "pasta_folhas": "data/entrada/folha",
-    "pasta_base_mestra": "data/entrada/base_mestra",
+    "pasta_cadastro": "data/entrada/cadastro",
     "pasta_saida": "data/processado",
-    "abas_base_mestra_aceitas": ["Base Mestra", "Base_Mestra", "BaseMestra"]
+    "abas_cadastro_aceitas": ["Cadastro"]
   }
 }

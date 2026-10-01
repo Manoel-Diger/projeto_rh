@@ -31,7 +31,7 @@
   // mes: valor derivado (ver U.sincronizaPeriodo) — a chave do mês quando há exatamente UM mês selecionado
   // e "TODOS" em qualquer outro caso (nenhum ou vários meses). É o que as telas já usavam para escolher
   // entre a visão de um mês e a visão consolidada.
-  U.state = { anos: [], meses: [], mes: "TODOS", aba: "exec", filtros: { area: "", turno: "", situacao: "", funcao: "", busca: "" }, sort: {} };
+  U.state = { anos: [], meses: [], mes: "TODOS", aba: "geral", filtros: { area: "", turno: "", situacao: "", funcao: "", busca: "" }, sort: {} };
 
   U.mesDados = (m) => {
     const mesAlvo = m || U.state.mes;
