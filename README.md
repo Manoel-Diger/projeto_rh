@@ -57,6 +57,18 @@ Os dois filtros aceitam **mais de uma opção ao mesmo tempo**. Clique no campo 
 - A coluna **VAR.** da tabela "Comparativo mensal" compara os dois últimos meses cronológicos da tabela (passe o mouse no título para ver quais).
 - Os filtros de Área, Turno, Situação e Função voltam para "Todos" sozinhos quando o valor escolhido não existe no período selecionado.
 
+## Comparação entre colaboradores (campo "Buscar colaborador")
+Clique no campo **Buscar colaborador**: abre-se uma lista com os colaboradores do período (respeitando Área, Turno, Situação e Função).
+Digitar localiza nomes; **marque dois ou mais** para comparar (máximo de 10). "Limpar seleção" desfaz.
+- **Sem seleção**: a busca por trecho do nome funciona exatamente como antes.
+- **Com seleção e um único mês**: o painel segue como sempre, filtrado para os colaboradores marcados.
+- **Com 2+ colaboradores e 2+ meses** (ou "Todos os meses"), a **Visão geral** passa a mostrar cada colaborador separado, mês a mês:
+  os gráficos viram uma série por colaborador (barras agrupadas com poucos meses, linhas com muitos) — Custo HE + DSR, Horas de HE,
+  HE como % da remuneração, Custo médio por hora de HE e Horas acima de 44h — e a nova tabela **Comparativo por colaborador — mês a mês**
+  traz cada indicador por pessoa e por mês, com TOTAL e VAR. (último x penúltimo mês). Mês sem registro aparece como "—".
+- O **total consolidado** da seleção continua na tela como informação complementar (cartões do topo e tabela "Comparativo mensal — HE e DSR").
+- Os demais filtros (Área, Turno, Situação, Função, Ano e Mês) continuam valendo; quem deixar de existir no período sai da seleção sozinho.
+
 ## Regras e premissas (editáveis em `scripts/config.json`)
 - **HE** = eventos 34, 36 e 39 da folha; **DSR sobre HE** = evento 65. O custo de HE inclui o DSR.
 - Valor/hora = salário ÷ 220. Limite de referência: 44 h de HE/mês (2 h × 22 dias).

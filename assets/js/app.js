@@ -133,6 +133,56 @@
     render();
   }
 
+  /* ---- seleção de colaboradores para comparação (campo "Buscar colaborador") ---- */
+  // Colaboradores do período, respeitando Área/Turno/Situação/Função (não a busca nem a seleção).
+  function listaColabs() {
+    const f = U.state.filtros;
+    const base = U.state.mes === "TODOS" ? U.todosColaboradores() : U.mesDados().colaboradores;
+    const m = new Map();
+    base.filter((c) => (!f.area || c.area === f.area) && (!f.turno || c.turno === f.turno) &&
+      (!f.situacao || c.situacao === f.situacao) && (!f.funcao || c.funcao === f.funcao))
+      .forEach((c) => m.set(U.chaveColab(c), { chave: U.chaveColab(c), nome: c.nome }));
+    return [...m.values()].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  }
+  function nomeColab(k) {
+    const c = listaColabs().find((x) => x.chave === k);
+    return c ? U.titulo(c.nome) : k;
+  }
+  // descarta da seleção quem não existe mais no período/filtros atuais
+  function podaColabs() {
+    const f = U.state.filtros, ok = new Set(listaColabs().map((c) => c.chave));
+    f.colabs = (f.colabs || []).filter((k) => ok.has(k));
+  }
+  function atualizaContagemColab() {
+    const n = U.state.filtros.colabs.length, pop = $("colab-pop");
+    const t = pop.querySelector("#colab-n");
+    if (t) t.textContent = n ? `${n} selecionado${n > 1 ? "s" : ""}${n < 2 ? " · marque 2 ou mais para comparar" : ""}` : "Marque 2 ou mais para comparar";
+    pop.querySelectorAll("input[data-colab]").forEach((i) => { i.disabled = !i.checked && n >= U.MAX_COLABS; });
+    const lim = pop.querySelector("#colab-max");
+    if (lim) lim.hidden = n < U.MAX_COLABS;
+    $("f-busca").placeholder = n ? `${n} selecionado${n > 1 ? "s" : ""}` : "Nome";
+  }
+  function montaPopColab() {
+    const pop = $("colab-pop"), f = U.state.filtros, sel = new Set(f.colabs), b = f.busca.trim().toLowerCase();
+    const todos = listaColabs(), idx = new Map(todos.map((c) => [c.chave, c]));
+    const marcados = f.colabs.map((k) => idx.get(k)).filter(Boolean);
+    const outros = todos.filter((c) => !sel.has(c.chave) && (!b || c.nome.toLowerCase().includes(b)));
+    const item = (c) => `<label class="mchk colab"><input type="checkbox" data-colab="${U.esc(c.chave)}" ${sel.has(c.chave) ? "checked" : ""}><span>${U.esc(U.titulo(c.nome))}</span></label>`;
+    pop.innerHTML = `<div class="colab-cab"><span id="colab-n"></span><button type="button" class="colab-limpa" id="colab-limpa">Limpar seleção</button></div>
+      <div class="colab-max" id="colab-max" hidden>Máximo de ${U.MAX_COLABS} colaboradores na comparação.</div>
+      <div class="colab-lista">${marcados.map(item).join("")}${marcados.length && outros.length ? '<div class="colab-sep"></div>' : ""}${outros.map(item).join("") || (marcados.length ? "" : '<div class="colab-vazio">Nenhum colaborador encontrado.</div>')}</div>`;
+    atualizaContagemColab();
+  }
+  function abrePopColab() {
+    const pop = $("colab-pop");
+    montaPopColabSeVazio();
+    pop.hidden = false;
+    pop.classList.remove("dir");
+    if (pop.getBoundingClientRect().right > window.innerWidth - 8) pop.classList.add("dir");
+  }
+  function montaPopColabSeVazio() { if (!$("colab-pop").firstElementChild) montaPopColab(); }
+  function fechaPopColab() { $("colab-pop").hidden = true; }
+
   function montaFiltros() {
     const L = U.state.mes === "TODOS" ? U.todosColaboradores() : U.mesDados().colaboradores, f = U.state.filtros;
     const uniq = (k) => [...new Set(L.map((c) => c[k]))].filter(Boolean).sort((a, b) => a.localeCompare(b, "pt-BR"));
@@ -143,7 +193,9 @@
     opcoes($("f-turno"), uniq("turno"), "Todos", f.turno);
     opcoes($("f-sit"), uniq("situacao"), "Todas", f.situacao);
     opcoes($("f-func"), uniq("funcao").map((x) => x), "Todas", f.funcao);
+    podaColabs();
     $("f-busca").value = f.busca;
+    montaPopColab();
   }
 
   function chips() {
@@ -152,7 +204,8 @@
     if (f.turno) itens.push("Turno: " + f.turno);
     if (f.situacao) itens.push("Situação: " + f.situacao);
     if (f.funcao) itens.push("Função: " + U.titulo(f.funcao));
-    if (f.busca) itens.push("Busca: " + f.busca);
+    if (f.colabs && f.colabs.length) itens.push("Colaboradores: " + f.colabs.map(nomeColab).join(", "));
+    else if (f.busca) itens.push("Busca: " + f.busca);
     const ativo = itens.length && !SEM_FILTRO.includes(U.state.aba);
     $("chips").innerHTML = ativo ? itens.map((i) => `<span class="chip">${U.esc(i)}</span>`).join("") + `<span class="chip">${U.dadosFiltrados().length} colaboradores</span>` : "";
   }
@@ -197,11 +250,41 @@
       el.addEventListener("focusout", (e) => { if (e.relatedTarget && !el.contains(e.relatedTarget)) fecha(el); });
     });
     document.addEventListener("click", (e) => document.querySelectorAll(".msel.aberto").forEach((el) => { if (!el.contains(e.target)) fecha(el); }));
-    const liga = (id, chave) => $(id).addEventListener("change", (e) => { U.state.filtros[chave] = e.target.value; render(); });
+    const liga = (id, chave) => $(id).addEventListener("change", (e) => { U.state.filtros[chave] = e.target.value; podaColabs(); montaPopColab(); render(); });
     liga("f-area", "area"); liga("f-turno", "turno"); liga("f-sit", "situacao"); liga("f-func", "funcao");
     let t;
-    $("f-busca").addEventListener("input", (e) => { clearTimeout(t); t = setTimeout(() => { U.state.filtros.busca = e.target.value; render(); }, 250); });
-    $("b-limpar").addEventListener("click", () => { U.state.filtros = { area: "", turno: "", situacao: "", funcao: "", busca: "" }; montaFiltros(); render(); });
+    // Digitar localiza nomes (e, sem seleção, filtra por trecho do nome como sempre). Marcar dois ou mais
+    // nomes na lista ativa a comparação entre colaboradores.
+    $("f-busca").addEventListener("input", (e) => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        U.state.filtros.busca = e.target.value;
+        montaPopColab(); abrePopColab();
+        if (!U.state.filtros.colabs.length) render();
+      }, 250);
+    });
+    $("f-busca").addEventListener("focus", abrePopColab);
+    $("f-busca").addEventListener("click", abrePopColab);
+    const filtroBusca = $("f-busca").closest(".filtro");
+    filtroBusca.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("colab-pop").hidden) { e.stopPropagation(); fechaPopColab(); $("f-busca").focus(); } });
+    filtroBusca.addEventListener("focusout", (e) => { if (e.relatedTarget && !filtroBusca.contains(e.relatedTarget)) fechaPopColab(); });
+    document.addEventListener("click", (e) => { if (!filtroBusca.contains(e.target)) fechaPopColab(); });
+    $("colab-pop").addEventListener("change", (e) => {
+      const i = e.target;
+      if (!i.dataset || i.dataset.colab == null) return;
+      const lista = U.state.filtros.colabs.filter((k) => k !== i.dataset.colab);
+      if (i.checked && lista.length < U.MAX_COLABS) lista.push(i.dataset.colab);
+      U.state.filtros.colabs = lista;
+      atualizaContagemColab();
+      render(true);
+    });
+    $("colab-pop").addEventListener("click", (e) => {
+      if (e.target.id !== "colab-limpa") return;
+      U.state.filtros.colabs = [];
+      montaPopColab();
+      render(true);
+    });
+    $("b-limpar").addEventListener("click", () => { U.state.filtros = { area: "", turno: "", situacao: "", funcao: "", busca: "", colabs: [] }; montaFiltros(); render(); });
     $("b-imprimir").addEventListener("click", () => window.print());
 
     // ordenação de tabelas, exportação e links internos (delegação)

@@ -174,13 +174,53 @@
     }).join("");
 
     return `<div class="card">
-      <h3>Comparativo mensal — HE e DSR</h3>
+      <h3>Comparativo mensal — HE e DSR${U.comparaColabs() ? " (total da seleção)" : ""}</h3>
       <p class="sub">Valores somados por mês. HE Total = HE 50% + HE 100% + HE 50% c/ BH, sem DSR. Colaboradores com HE: total de colaboradores únicos. VAR. = último mês x mês anterior.</p>
       <div class="tabela-wrap tabela-mensal">
         <table>
           <thead><tr>${head}</tr></thead>
           <tbody>${body}</tbody>
         </table>
+      </div>
+    </div>`;
+  };
+
+  // Tabela "Comparativo por colaborador — mês a mês": para cada indicador, uma linha por colaborador
+  // selecionado e uma coluna por mês (ordem cronológica). TOTAL soma os meses; VAR. = último x penúltimo mês.
+  const tabelaColabsMes = (SC) => {
+    const { meses, colabs } = SC;
+    const indic = [
+      { t: "HE + DSR", f: (r) => r.he_total, tipo: "money", dest: true },
+      { t: "HE 50%", f: (r) => r.he50_v, tipo: "money" },
+      { t: "HE 100%", f: (r) => r.he100_v, tipo: "money" },
+      { t: "HE 50% c/ BH", f: (r) => r.he_bh_v, tipo: "money" },
+      { t: "DSR sobre HE", f: (r) => r.dsr_he, tipo: "money" },
+      { t: "Horas de HE", f: (r) => r.he_h, tipo: "h" },
+      { t: "Acima de 44h (meses)", f: (r) => (r.acima_limite ? 1 : 0), tipo: "n" },
+    ];
+    const fmt = (x, tipo) => (tipo === "money" ? U.brl(x) : tipo === "h" ? U.n1(x) + " h" : U.n0(x));
+    const ult = meses[meses.length - 1], pen = meses.length > 1 ? meses[meses.length - 2] : null;
+    const head = `<th scope="col">Indicador / colaborador</th>` + meses.map((m) => `<th scope="col" class="n">${mesAnoLabel(m)}</th>`).join("") +
+      `<th scope="col" class="n">TOTAL</th><th scope="col" class="n"${pen ? ` title="${U.esc(mesAnoLabel(ult))} em relação a ${U.esc(mesAnoLabel(pen))}"` : ""}>VAR.</th>`;
+    const body = indic.map((ind) => {
+      const linhas = colabs.map((c) => {
+        const vals = meses.map((m) => (c.porMes[m] ? ind.f(c.porMes[m]) : null));
+        const total = vals.reduce((a, b) => a + (b || 0), 0);
+        const u = vals[meses.length - 1], p = pen ? vals[meses.length - 2] : null;
+        const varHtml = u != null && p != null ? (U.delta(u, p) || "—") : "";
+        return `<tr${ind.dest ? ' class="linha-dest"' : ""}>
+          <td><span class="cdot" style="background:${c.cor}"></span>${U.esc(c.curto)}</td>
+          ${vals.map((x) => `<td class="n">${x == null ? "—" : fmt(x, ind.tipo)}</td>`).join("")}
+          <td class="n"><b>${fmt(total, ind.tipo)}</b></td>
+          <td class="n">${varHtml}</td></tr>`;
+      }).join("");
+      return `<tr class="linha-grupo"><td colspan="${meses.length + 3}">${U.esc(ind.t)}</td></tr>${linhas}`;
+    }).join("");
+    return `<div class="card">
+      <h3>Comparativo por colaborador — mês a mês</h3>
+      <p class="sub">Cada colaborador selecionado em cada mês, lado a lado. "—" = sem registro no mês. VAR. = último mês x mês anterior. A tabela seguinte traz o total consolidado da seleção.</p>
+      <div class="tabela-wrap tabela-mensal">
+        <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
       </div>
     </div>`;
   };
@@ -194,6 +234,10 @@
       view.innerHTML = semDados();
       return;
     }
+
+    // Comparação entre colaboradores (2+ marcados na busca e 2+ meses): gráficos e tabela mês a mês por pessoa.
+    const SC = U.comparaColabs() ? U.serieColabs() : null;
+    const comp = !!(SC && SC.colabs.length >= 2 && SC.meses.length >= 2);
 
     const k = todos ? U.kpisHistoricos(L) : U.kpis(L), c = K();
     const ant = !todos ? U.mesAnterior() : null;
@@ -220,7 +264,7 @@
       ${todos ? `<div class="card historico-head">
         <div>
           <h3>Visão consolidada do histórico</h3>
-          <p class="sub">Período: ${U.esc(U.periodoLabel())}. Filtros de Área, Turno, Situação, Função e Busca aplicados ao período inteiro.</p>
+          <p class="sub">Período: ${U.esc(U.periodoLabel())}. Filtros de Área, Turno, Situação, Função e Busca aplicados ao período inteiro.${comp ? ` Comparando ${SC.colabs.length} colaboradores mês a mês; os cartões abaixo mostram o total consolidado da seleção.` : ""}</p>
         </div>
         <span class="pill">${mensal.length} ${mensal.length === 1 ? "mês" : "meses"}</span>
       </div>` : ""}
@@ -238,35 +282,35 @@
       <div class="grid g-2">
         <div class="card">
           <h3>Custo de HE + DSR — mês a mês</h3>
-          <p class="sub">HE + DSR em R$, por mês.</p>
+          <p class="sub">${comp ? "HE + DSR em R$, por mês, de cada colaborador selecionado." : "HE + DSR em R$, por mês."}</p>
           <div class="chart"><canvas id="c-mensal-custo"></canvas></div>
         </div>
 
         <div class="card">
           <h3>Horas extras — mês a mês</h3>
-          <p class="sub">Total de horas de HE, por mês.</p>
+          <p class="sub">${comp ? "Horas de HE, por mês, de cada colaborador selecionado." : "Total de horas de HE, por mês."}</p>
           <div class="chart"><canvas id="c-mensal-horas"></canvas></div>
         </div>
       </div>
 
       <div class="grid g-2">
         <div class="card">
-          <h3>Colaboradores com HE — mês a mês</h3>
-          <p class="sub">Colaboradores com HE, por mês.</p>
+          <h3>${comp ? "HE como % da remuneração — mês a mês" : "Colaboradores com HE — mês a mês"}</h3>
+          <p class="sub">${comp ? "HE + DSR ÷ remuneração bruta do mês, por colaborador." : "Colaboradores com HE, por mês."}</p>
           <div class="chart"><canvas id="c-mensal-colab"></canvas></div>
         </div>
 
         <div class="card">
-          <h3>Média de HE por colaborador — mês a mês</h3>
-          <p class="sub">Horas de HE ÷ colaboradores com HE, por mês.</p>
+          <h3>${comp ? "Custo médio por hora de HE — mês a mês" : "Média de HE por colaborador — mês a mês"}</h3>
+          <p class="sub">${comp ? "HE + DSR ÷ horas de HE, por colaborador." : "Horas de HE ÷ colaboradores com HE, por mês."}</p>
           <div class="chart"><canvas id="c-mensal-media"></canvas></div>
         </div>
       </div>
 
       <div class="grid g-2">
         <div class="card">
-          <h3>Acima de 44h — mês a mês</h3>
-          <p class="sub">Colaboradores acima de 44 h de HE, por mês.</p>
+          <h3>${comp ? "Horas acima de 44h — mês a mês" : "Acima de 44h — mês a mês"}</h3>
+          <p class="sub">${comp ? "Horas de HE que excedem o limite de 44 h no mês, por colaborador." : "Colaboradores acima de 44 h de HE, por mês."}</p>
           <div class="chart"><canvas id="c-mensal-acima"></canvas></div>
         </div>
       </div>` : `
@@ -299,6 +343,8 @@
         </div>
       </div>`}
 
+      ${comp ? tabelaColabsMes(SC) : ""}
+
       ${tabelaComparativoMensalHE()}
 
       ${ins.length ? `
@@ -310,6 +356,17 @@
         <div class="ins">${ins.map(insight).join("")}</div>
       </div>` : ""}
     `;
+
+    if (comp) {
+      const labels = SC.meses.map(mesAnoLabel);
+      const serie = (f) => SC.colabs.map((x) => ({ nome: x.curto, cor: x.cor, dados: SC.meses.map((m) => (x.porMes[m] ? f(x.porMes[m]) : null)) }));
+      C.serieColab("c-mensal-custo", labels, serie((r) => Math.round(r.he_total)), { fmt: (x) => U.brlK(x), tooltipFmt: (x) => U.brl0(x) });
+      C.serieColab("c-mensal-horas", labels, serie((r) => +r.he_h.toFixed(1)), { fmt: (x) => x + " h" });
+      C.serieColab("c-mensal-colab", labels, serie((r) => +(r.remuneracao ? (r.he_total / r.remuneracao) * 100 : 0).toFixed(1)), { fmt: (x) => x + "%" });
+      C.serieColab("c-mensal-media", labels, serie((r) => +(r.he_h ? r.he_total / r.he_h : 0).toFixed(2)), { fmt: (x) => "R$ " + x });
+      C.serieColab("c-mensal-acima", labels, serie((r) => +Math.max(0, r.he_h - G.DADOS.config.regras.limite_he_mes_horas).toFixed(1)), { fmt: (x) => x + " h" });
+      return;
+    }
 
     if (todos) {
       graficoMensal("c-mensal-custo", mensalOriginal, (x) => Math.round(x.he), {

@@ -31,7 +31,7 @@
   // mes: valor derivado (ver U.sincronizaPeriodo) — a chave do mês quando há exatamente UM mês selecionado
   // e "TODOS" em qualquer outro caso (nenhum ou vários meses). É o que as telas já usavam para escolher
   // entre a visão de um mês e a visão consolidada.
-  U.state = { anos: [], meses: [], mes: "TODOS", aba: "geral", filtros: { area: "", turno: "", situacao: "", funcao: "", busca: "" }, sort: {} };
+  U.state = { anos: [], meses: [], mes: "TODOS", aba: "geral", filtros: { area: "", turno: "", situacao: "", funcao: "", busca: "", colabs: [] }, sort: {} };
 
   U.mesDados = (m) => {
     const mesAlvo = m || U.state.mes;
@@ -118,12 +118,19 @@
     return i > 0 ? l[i - 1] : null;
   };
 
+  // Identificador do colaborador (mesma chave usada em consolidaColaboradores).
+  U.chaveColab = (c) => c.matricula || c.nome;
+
+  // f.colabs = colaboradores marcados no seletor da busca. Com seleção, o filtro vale só para eles
+  // (o texto digitado passa a servir apenas para localizar nomes na lista do seletor); sem seleção,
+  // a busca por trecho do nome funciona exatamente como antes.
   U.aplicaFiltros = (lista) => {
     const f = U.state.filtros, b = f.busca.trim().toLowerCase();
+    const sel = f.colabs && f.colabs.length ? new Set(f.colabs) : null;
     return lista.filter((c) =>
       (!f.area || c.area === f.area) && (!f.turno || c.turno === f.turno) &&
       (!f.situacao || c.situacao === f.situacao) && (!f.funcao || c.funcao === f.funcao) &&
-      (!b || c.nome.toLowerCase().includes(b)));
+      (sel ? sel.has(U.chaveColab(c)) : (!b || c.nome.toLowerCase().includes(b))));
   };
   
   // Consolida uma lista com um registro por colaborador/mês (como a de "Todos os meses")
@@ -143,6 +150,35 @@
       Object.assign(g, { nome: c.nome, funcao: c.funcao, area: c.area, turno: c.turno, situacao: c.situacao });
     });
     return [...m.values()].map((c) => ({ ...c, he_pct_salario: c.remuneracao ? (c.he_total / c.remuneracao) * 100 : 0 }));
+  };
+
+  // ---- comparação entre colaboradores (busca com seleção múltipla) ----
+  U.COR_COLABS = ["#4f8df7", "#f0932b", "#34c38f", "#e8b931", "#ef5b5b", "#b57bee", "#2ec4d6", "#f06fa6", "#8797b2", "#9ad14b"];
+  U.MAX_COLABS = U.COR_COLABS.length;
+
+  // Há comparação quando dois ou mais colaboradores estão marcados E a análise cobre dois ou mais meses
+  // (vários meses marcados ou "Todos os meses"). Com um único mês, o painel segue como sempre.
+  U.comparaColabs = () => U.state.mes === "TODOS" && (U.state.filtros.colabs || []).length >= 2 && U.mesesComparativo().length >= 2;
+
+  // Séries por colaborador, mês a mês (ordem cronológica). Respeita todos os demais filtros.
+  // Mês em que o colaborador não tem registro fica de fora (aparece como "—" / lacuna no gráfico).
+  U.serieColabs = () => {
+    const base = U.aplicaFiltros(U.colaboradoresDosMeses(U.mesesComparativo()));
+    const por = new Map();
+    base.forEach((c) => {
+      const k = U.chaveColab(c);
+      if (!por.has(k)) por.set(k, { chave: k, nome: c.nome, porMes: {} });
+      por.get(k).porMes[c._mes] = c;
+      por.get(k).nome = c.nome;
+    });
+    const ordem = U.state.filtros.colabs;
+    const colabs = ordem.filter((k) => por.has(k)).map((k, i) => ({ ...por.get(k), cor: U.COR_COLABS[i % U.COR_COLABS.length] }));
+    // nome curto (primeiro + último); se houver nomes iguais na seleção, usa o nome completo
+    const curto = (n) => { const p = U.titulo(n).split(" ").filter(Boolean); return p.length > 2 ? p[0] + " " + p[p.length - 1] : p.join(" "); };
+    colabs.forEach((c) => { c.curto = curto(c.nome); });
+    colabs.forEach((c) => { if (colabs.filter((o) => o.curto === c.curto).length > 1) c.curto = U.titulo(c.nome); });
+    const meses = U.mesesComparativo().filter((m) => colabs.some((c) => c.porMes[m]));
+    return { meses, colabs };
   };
 
   U.dadosFiltrados = (mes) => {

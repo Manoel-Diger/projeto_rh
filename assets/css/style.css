@@ -18,12 +18,12 @@
 
 :root{
   /* superfícies e linhas (neutros) */
-  --ink:#0a101c;            /* fundo da barra lateral */
+  --ink:#0a101c;
   --ink-2:#111a2b;
-  --ink-3:#8fb3ff;          /* usado inline como cor de link */
-  --paper:#0a101c;          /* fundo da página */
-  --surface:#111a2b;        /* cartões */
-  --surface-2:#0d1524;      /* cabeçalhos de tabela, campos */
+  --ink-3:#8fb3ff;
+  --paper:#0a101c;
+  --surface:#111a2b;
+  --surface-2:#0d1524;
   --line:#1f2c44;
   --line-2:#172238;
 
@@ -47,7 +47,7 @@
   --alerta-soft:rgba(239,91,91,.13);
   --ok-soft:rgba(52,195,143,.13);
   --medio-soft:rgba(232,185,49,.13);
-  --rk-azul:#4d6b8f;        /* barras dos rankings */
+  --rk-azul:#4d6b8f;
   --neutro-soft:rgba(135,151,178,.14);
 
   --radius:10px;
@@ -243,7 +243,6 @@ button,select,input{
   gap:6px 8px;
 }
 
-/* linha 1: título + subtítulo; linha 2: filtros */
 .top .titulo{
   flex:1 1 100%;
   min-width:0;
@@ -481,7 +480,6 @@ input[type="text"]:focus{
   white-space:nowrap;
 }
 
-/* neutraliza o estilo genérico ".filtro input" nas caixas de seleção */
 .msel .mchk input[type="checkbox"]{
   width:14px !important;
   height:14px !important;
@@ -516,7 +514,6 @@ input[type="text"]:focus{
   gap:4px;
 }
 
-/* cada mês vira um botão marcável; a caixa fica invisível mas acessível pelo teclado */
 .mchk.mes{
   justify-content:center;
   padding:4px 0;
@@ -555,7 +552,6 @@ input[type="text"]:focus{
   cursor:not-allowed;
 }
 
-/* campos numéricos e de texto fora da barra de filtros (premissas da simulação) */
 input[type="number"],
 input[type="text"]{
   background:var(--surface-2);
@@ -563,7 +559,6 @@ input[type="text"]{
   color:var(--text);
 }
 
-/* listas suspensas: as opções abertas são desenhadas pelo navegador */
 select,
 input,
 .msel-pop{
@@ -615,7 +610,6 @@ select option:disabled{
   grid-template-columns:minmax(0,2fr) minmax(0,1fr);
 }
 
-/* gráfico ímpar no fim de uma linha dupla ocupa a largura toda */
 .g-2 > .card:last-child:nth-child(odd){
   grid-column:1 / -1;
 }
@@ -658,7 +652,6 @@ select option:disabled{
   height:170px;
 }
 
-/* cabeçalho da visão consolidada */
 .historico-head{
   display:flex;
   align-items:center;
@@ -696,7 +689,6 @@ select option:disabled{
   font-size:12px;
 }
 
-/* o link usa cor inline (var(--ink-3)); aqui garantimos contraste e discrição */
 .secao a{
   color:#8fb3ff !important;
   text-decoration:none;
@@ -720,7 +712,6 @@ select option:disabled{
 
 /* =========================================================
    INDICADORES (KPI)
-   Principais (HE, DSR, custos) em destaque; secundários discretos.
    ========================================================= */
 
 .kpi{
@@ -734,12 +725,10 @@ select option:disabled{
   gap:2px;
 }
 
-/* tom por tipo de indicador (classe definida pelo JS) */
-.kpi.t-he{ --tone:240,147,43; }      /* horas extras */
-.kpi.t-dsr{ --tone:52,195,143; }     /* DSR */
-.kpi.t-custo{ --tone:79,141,247; }   /* custos / remuneração */
+.kpi.t-he{ --tone:240,147,43; }
+.kpi.t-dsr{ --tone:52,195,143; }
+.kpi.t-custo{ --tone:79,141,247; }
 
-/* secundários: cinza, mais discretos */
 .kpi.t-bh,
 .kpi.t-colab{
   --tone:135,151,178;
@@ -778,12 +767,10 @@ select option:disabled{
   line-height:1.4;
 }
 
-/* principais: rótulo na cor do indicador */
 .kpi.t-he .rot{ color:#f5b467; }
 .kpi.t-dsr .rot{ color:#6fd9ae; }
 .kpi.t-custo .rot{ color:#8fb3ff; }
 
-/* secundários: valor menor e mais suave */
 .kpi.t-bh .val,
 .kpi.t-colab .val,
 .kpi.t-he100 .val{
@@ -800,7 +787,6 @@ select option:disabled{
 
 .kpi.t-he100 .rot{ color:#f29a9a; }
 
-/* total: o indicador mais importante do bloco */
 .kpi.dest{
   background:var(--surface);
   order:-1;
@@ -825,7 +811,6 @@ select option:disabled{
   }
 }
 
-/* variação sobre o mês anterior */
 .delta{
   display:inline-block;
   font-size:11px;
@@ -850,7 +835,6 @@ select option:disabled{
   color:#6fd9ae;
 }
 
-/* variação repetida na linha de detalhe: texto simples, sem etiqueta */
 .kpi .det .delta{
   background:none;
   padding:0;
@@ -861,7 +845,6 @@ select option:disabled{
 
 /* =========================================================
    INSIGHTS E PONTOS DE ATENÇÃO
-   Problemas (vermelho) primeiro, depois atenção (amarelo), por fim informação (azul).
    ========================================================= */
 
 .ins{
@@ -871,7 +854,6 @@ select option:disabled{
   align-items:start;
 }
 
-/* base: informação complementar (compacta e discreta) */
 .insight{
   background:var(--surface);
   border:1px solid var(--line);
@@ -899,7 +881,6 @@ select option:disabled{
   order:-1;
 }
 
-/* crítico: destaque máximo, sempre antes dos demais */
 .insight.alto{
   order:-2;
   padding:12px 14px;
@@ -977,15 +958,12 @@ td{
   white-space:nowrap;
 }
 
-/* colunas de texto (nome, função, área) quebram em duas linhas em vez de serem cortadas;
-   colunas numéricas permanecem em linha única */
 td:not(.n){
   white-space:normal;
   overflow-wrap:break-word;
   line-height:1.3;
 }
 
-/* cabeçalhos longos quebram para a tabela caber na largura disponível */
 th{
   white-space:normal;
   line-height:1.25;
@@ -1046,8 +1024,6 @@ tr:hover td{
   color:var(--muted);
 }
 
-/* comparativo mensal: muitas colunas (um mês cada); só ela rola, dentro do próprio quadro,
-   com a coluna "Indicador" fixa. Células em linha única e mais compactas. */
 .tabela-mensal{
   max-height:none;
 }
@@ -1090,7 +1066,6 @@ tr:hover td{
   background:#1b1e26;
 }
 
-/* coluna de excesso acima do limite: problema */
 #t-acima td:nth-child(5){
   color:#ff9b9b;
   font-weight:600;
@@ -1168,7 +1143,6 @@ table.rk tr:last-child td{
   text-align:right;
 }
 
-/* três primeiros colocados: os maiores ofensores */
 table.rk tr:nth-child(-n+3) .rk-pos{
   color:#fff;
   font-weight:700;
@@ -1217,8 +1191,8 @@ table.rk tr:nth-child(-n+3) .rk-val{
   border-radius:99px;
 }
 
-/* HE = laranja · atrasos = azul padrão · faltas = vermelho */
-.g-2 > .card:nth-child(-n+4) .rk-barra i{ background:var(--he) !important; }
+/* Rankings: azul padrão para as barras de comparação */
+.g-2 > .card:nth-child(-n+4) .rk-barra i{ background:var(--rk-azul) !important; }
 .g-2 > .card:nth-child(5) .rk-barra i{ background:var(--rk-azul) !important; }
 .g-2 > .card:nth-child(6) .rk-barra i{ background:var(--alerta) !important; }
 
@@ -1287,9 +1261,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
 
 /* =========================================================
    SIMULAÇÃO 13h–22h
-   Ordem visual: resultado (impacto) → cenários → atual × proposto
-   (cobertura) → detalhe por colaborador → pontos de atenção.
-   Somente ordem e aparência; o HTML e os cálculos são os mesmos.
    ========================================================= */
 
 .sim-layout{
@@ -1332,7 +1303,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
   padding:0 8px;
 }
 
-/* a coluna de resultados passa a ordenar seus blocos diretamente */
 #sim-res{
   display:contents !important;
 }
@@ -1343,7 +1313,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
 #sim-res > .card:nth-child(3){ order:4; }
 .sim-layout > div:last-child > .card:has(.lista){ order:5; }
 
-/* 1. impacto: resultado líquido em destaque */
 #sim-res > .card:nth-child(1){
   padding:16px 18px;
 }
@@ -1368,7 +1337,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
   color:var(--alerta);
 }
 
-/* decomposição do resultado: economia (verde) · noturno (amarelo) · operação (cinza) */
 #sim-res > .card:nth-child(1) .g-3{
   gap:10px;
   margin-top:12px !important;
@@ -1386,7 +1354,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
   color:#fff;
 }
 
-/* 2. cenários de absorção */
 .cen{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -1597,7 +1564,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
     min-width:0;
   }
 
-  /* menu */
   .side{
     position:static;
     width:100%;
@@ -1642,7 +1608,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
     box-shadow:inset 0 -2px 0 var(--atual);
   }
 
-  /* cabeçalho e filtros */
   .top{
     position:sticky;
     top:0;
@@ -1750,7 +1715,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
     padding:3px 8px;
   }
 
-  /* conteúdo */
   #view{
     width:100%;
     padding:12px 10px 30px;
@@ -1855,7 +1819,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
     font-size:12px;
   }
 
-  /* tabelas */
   .tabela-wrap{
     width:100%;
     max-width:100%;
@@ -1882,7 +1845,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
     text-overflow:clip;
   }
 
-  /* rankings */
   table.rk{
     width:100%;
     min-width:0;
@@ -1921,7 +1883,6 @@ table.rk tr:nth-child(-n+3) .rk-val{
     padding-left:3px !important;
   }
 
-  /* simulação */
   .sim-layout{
     gap:10px;
   }
@@ -2006,3 +1967,134 @@ table.rk tr:nth-child(-n+3) .rk-val{
     font-size:11px;
   }
 }
+
+/* =========================================================
+   COMPARAÇÃO ENTRE COLABORADORES (seleção na busca)
+   Acréscimo: painel suspenso do campo "Buscar colaborador" e linhas da
+   tabela por colaborador. Não altera nenhuma regra existente.
+   ========================================================= */
+
+.filtro:has(#f-busca){
+  position:relative;
+}
+
+.colab-pop{
+  position:absolute;
+  top:calc(100% + 4px);
+  left:0;
+  z-index:30;
+  width:260px;
+  max-height:min(70vh,420px);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:8px;
+  background:var(--surface);
+  border:1px solid #2c3f60;
+  border-radius:var(--radius);
+  box-shadow:0 16px 36px -12px rgba(0,0,0,.7);
+  font-size:12px;
+}
+
+.colab-pop[hidden]{
+  display:none;
+}
+
+.colab-pop.dir{
+  left:auto;
+  right:0;
+}
+
+.colab-cab{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--line);
+  color:var(--muted);
+  font-size:11px;
+}
+
+.colab-limpa{
+  background:none;
+  border:0;
+  padding:0;
+  color:var(--ink-3);
+  font-size:11px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.colab-limpa:hover{
+  text-decoration:underline;
+}
+
+.colab-max{
+  color:var(--medio);
+  font-size:11px;
+}
+
+.colab-lista{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  overflow-y:auto;
+  padding-right:2px;
+}
+
+.colab-sep{
+  border-top:1px solid var(--line);
+  margin:2px 0;
+}
+
+.colab-vazio{
+  color:var(--faint);
+  padding:4px 2px;
+}
+
+.filtro .colab-pop .mchk{
+  font-size:12px;
+  margin:0;
+  color:var(--text);
+  text-transform:none;
+  letter-spacing:0;
+  white-space:normal;
+  align-items:flex-start;
+}
+
+.colab-pop .mchk input[type="checkbox"]{
+  width:14px !important;
+  height:14px !important;
+  min-width:0 !important;
+  padding:0;
+  margin:1px 0 0;
+  flex:none;
+  accent-color:var(--atual);
+  cursor:pointer;
+}
+
+.cdot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  margin-right:6px;
+  border-radius:50%;
+}
+
+.tabela-mensal .linha-grupo td{
+  padding-top:6px;
+  padding-bottom:3px;
+  color:var(--muted);
+  font-size:10px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  background:var(--surface-2);
+}
+
+@media print{
+  .colab-pop{
+    display:none !important;
+  }
+}
+

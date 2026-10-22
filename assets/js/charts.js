@@ -136,6 +136,31 @@
     },
   });
 
+  // Comparação entre colaboradores: uma série por colaborador ao longo dos meses (categorias).
+  // Poucos pontos: barras agrupadas (mesmo visual dos demais gráficos mensais); muitos meses: linhas,
+  // que deixam a evolução de cada colaborador legível. Valores nulos (sem registro no mês) ficam em branco.
+  C.serieColab = (id, labels, series, { fmt, tooltipFmt } = {}) => {
+    const linhas = labels.length * series.length > 30;
+    return C.make(id, {
+      type: linhas ? "line" : "bar",
+      data: {
+        labels,
+        datasets: series.map((s) => linhas
+          ? { label: s.nome, data: s.dados, borderColor: s.cor, backgroundColor: s.cor, borderWidth: 2.5, pointRadius: 2.5, pointHoverRadius: 5, tension: 0, spanGaps: false }
+          : { label: s.nome, data: s.dados, corBase: s.cor, backgroundColor: fill(s.cor, false), borderRadius: 6, maxBarThickness: 34, categoryPercentage: 0.8, barPercentage: 0.9 }),
+      },
+      options: {
+        maintainAspectRatio: false,
+        interaction: { mode: linhas ? "index" : "nearest", intersect: false, axis: "x" },
+        plugins: {
+          legend: { position: "bottom" },
+          tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${(tooltipFmt || fmt || String)(c.parsed.y)}` } },
+        },
+        scales: { y: eixo(fmt), x: { grid: { display: false }, border: { display: false } } },
+      },
+    });
+  };
+
   C.rosca = (id, labels, valores, cores, fmt) => C.make(id, {
     type: "doughnut",
     data: { labels, datasets: [{ data: valores, backgroundColor: cores, borderWidth: 0, spacing: 3, borderRadius: 5, hoverOffset: 5 }] },
